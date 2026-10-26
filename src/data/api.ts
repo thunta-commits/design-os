@@ -4,13 +4,37 @@ import { sampleLinearWorkspace } from './sample';
 import type { LinearWorkspace } from './types';
 
 export class UnauthorizedError extends Error {}
+/** A failed /api call. `message` is always human-readable text, never a serialized object. */
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) { super(message); }
+}
+
+/** Pulls a readable message out of any error body: our `{ error: "…" }`, Vercel's `{ error: { message } }`, or plain text. */
+function messageOf(body: unknown, status: number): string {
+  const e = body && typeof body === 'object' ? (body as { error?: unknown }).error : body;
+  if (typeof e === 'string' && e.trim()) return e;
+  if (e && typeof e === 'object' && typeof (e as { message?: unknown }).message === 'string') return (e as { message: string }).message;
+  return status >= 500 ? 'Design OS can’t reach its server right now. Try again in a minute.' : `Request failed (${status}).`;
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  let res: Response;
+  try { res = await fetch(path, { credentials: 'same-origin', ...init, headers: { accept: 'application/json', ...(init?.headers || {}) } }); }
+  catch { throw new ApiError('Design OS can’t reach its server. Check your connection and try again.', 0); }
+  const text = await res.text();
+  let body: unknown = null;
+  try { body = text ? JSON.parse(text) : null; } catch { body = null; }
+  if (!res.ok) {
+    // Platform crash pages are not our messages; never show them raw.
+    const msg = res.status >= 500 && !(body && typeof body === 'object' && typeof (body as { error?: unknown }).error === 'string') ? messageOf(null, res.status) : messageOf(body, res.status);
+    throw new ApiError(msg, res.status);
+  }
+  return body as T;
+}
 
 async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, { credentials: 'same-origin', ...init, headers: { accept: 'application/json', ...(init?.headers || {}) } });
-  if (res.status === 401) throw new UnauthorizedError('Sign in to continue.');
-  const body = await res.json().catch(() => null);
-  if (!res.ok) throw new Error((body && body.error) || `Request failed (${res.status})`);
-  return body as T;
+  try { return await request<T>(path, init); }
+  catch (err) { if (err instanceof ApiError && err.status === 401) throw new UnauthorizedError('Sign in to continue.'); throw err; }
 }
 
 export const emptyLinks = { myIssues: `${LINEAR_WORKSPACE}/my-issues/assigned`, activeCycle: `${LINEAR_WORKSPACE}/my-issues/assigned`, inbox: `${LINEAR_WORKSPACE}/inbox`, figmaRecents: FIGMA_RECENTS };
@@ -27,6 +51,7 @@ export async function fetchLinearWorkspace(refresh = false): Promise<LinearWorks
 
 export const session = {
   get: () => getJson<{ authenticated: boolean; configured: boolean }>('/api/auth/session'),
-  login: (password: string) => getJson<{ authenticated: boolean }>('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password }) }),
+  // Login calls request() directly so a 401 keeps its own "Incorrect password" message.
+  login: (password: string) => request<{ authenticated: boolean }>('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password }) }),
   logout: () => getJson<{ authenticated: boolean }>('/api/auth/logout', { method: 'POST' }),
 };

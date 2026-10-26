@@ -47,6 +47,6 @@ export const isSecure = (req: Request) => new URL(req.url).protocol === 'https:'
 
 /** Returns a 401/503 Response when the request may not proceed, otherwise null. */
 export function requireAuth(req: Request): Response | null {
-  if (!authConfigured()) return errorJson(503, 'Login isn’t configured. Set APP_PASSWORD and SESSION_SECRET.');
+  if (!authConfigured()) return errorJson(503, 'Login isn’t configured.');
   return isAuthenticated(req) ? null : errorJson(401, 'Sign in to continue.');
 }
