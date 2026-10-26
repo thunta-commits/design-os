@@ -95,7 +95,7 @@ export function SaveArticleDialog() {
 
 const DETAILS = {
   linear: { surfaces: ['Issues assigned to you', 'Projects and the active cycle', 'Status, priority and due dates', 'Figma attachments on issues'], howTo: 'Add LINEAR_API_KEY (a personal API key from Linear → Settings → Security & access) to the Vercel project’s environment variables, then redeploy.' },
-  figma: { surfaces: ['Recently edited files', 'Top-level frames for deep links', 'Files matched to Linear issues', 'Which issues have no design yet'], howTo: 'Figma sync isn’t built yet. It will use a Figma personal access token (FIGMA_TOKEN) stored in the Vercel project’s environment variables.' },
+  figma: { surfaces: ['Recently edited files', 'Top-level frames for deep links', 'Files matched to Linear issues', 'Which issues have no design yet'], howTo: 'Add FIGMA_TOKEN (a Figma personal access token with the File content: read scope, from Figma → Settings → Security) to the Vercel project’s environment variables, then redeploy.' },
 };
 const introOf = (s: IntegrationStatus) => (s.mode === 'sample' ? `Not connected. Everything marked “Sample ${s.name} data” is illustrative and will be replaced once the integration is live.`
   : s.mode === 'connected' ? `Connected.${s.lastSyncedAt ? ` Last synced ${timeAgo(s.lastSyncedAt)}.` : ''}`

@@ -135,8 +135,10 @@ export function OverviewView() {
           ) : (
             <div style={sx('display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 12px; border:1px dashed var(--border); border-radius:10px; text-align:center;')}>
               <strong style={sx('font-weight:600;')}>No Figma files yet</strong>
-              <span style={sx('font-size:13px; color:var(--muted-foreground);')}>Connect Figma to see files you edited recently.</span>
-              <Button variant="outline" size="sm" onClick={() => actions.setState({ dialog: 'integrations' })}>Connect Figma</Button>
+              <span style={sx('font-size:13px; color:var(--muted-foreground);')}>{fig.mode === 'connected' ? 'Sync Index on a tracked file to see it here.' : 'Connect Figma to see files you edited recently.'}</span>
+              {fig.mode === 'connected'
+                ? <Button variant="outline" size="sm" onClick={() => actions.go('figma')}>Go to Figma files</Button>
+                : <Button variant="outline" size="sm" onClick={() => actions.setState({ dialog: 'integrations' })}>Connect Figma</Button>}
             </div>
           )}
         </section>

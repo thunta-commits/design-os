@@ -1,13 +1,12 @@
 // Figma files (HANDOFF §11.1): add-by-link, skip rules, tracked files list, and the file details state.
 import type { FormEvent } from 'react';
 import { useApp, val } from '../app/store';
-import { ArrowLeftIcon, ArrowsClockwiseIcon, Button, Input, LinkSimpleIcon, NativeSelect, PlusIcon, Switch, Toggle, TrashIcon, ArrowUpRightIcon } from '../components/ds';
+import { ArrowLeftIcon, ArrowsClockwiseIcon, Button, ListIcon, Input, LinkSimpleIcon, NativeSelect, PlusIcon, Switch, Toggle, TrashIcon, ArrowUpRightIcon } from '../components/ds';
 import { FileIndex } from '../components/FileIndex';
 import { Pill } from '../components/Pill';
 import { Banner, H1, KeyValues, OutlineLink } from '../components/ui';
-import { figmaAdapter } from '../data/figmaAdapter';
 import type { TrackedFile } from '../data/types';
-import { formatShort, timeAgo } from '../lib/dates';
+import { exactTime, formatShort, syncedLabel, timeAgo } from '../lib/dates';
 import { MONO, sx } from '../lib/sx';
 import { frameUrl, newFile, NOT_CONNECTED, parseFigmaUrl, ROLE_BY_ID, ROLES, SKIP_GROUPS, validateAdd } from '../rules/figma';
 import { cardOf, indexGroups } from './indexGroups';
@@ -18,13 +17,22 @@ const usageLine = (f: TrackedFile) => (f.usageStatus === 'ok' && f.usage ? `${f.
 const toggleIn = (list: string[], id: string) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
 
 export function FigmaFilesView() {
-  const { state, actions, c, isMobile, linearLoading } = useApp();
+  const { state, actions, c, isMobile, linearLoading, figma: fAd } = useApp();
   const fst = state.fstore, fg = state.fg;
-  const fAd = figmaAdapter, fConn = fAd.mode === 'connected';
+  const fConn = fAd.mode === 'connected', fLoading = state.figmaConfigured === null;
   const fErr = validateAdd(fg, fst.files);
   const fq = fg.search.trim().toLowerCase();
   const fList = fst.files.filter((f) => (!fg.roleFilter || f.role === fg.roleFilter) && (!fq || `${f.name} ${f.key}`.toLowerCase().includes(fq)));
-  const unavailable = `Sync Index and Scan usage are unavailable. ${NOT_CONNECTED}`;
+  const unavailable = fConn ? 'Scan usage isn’t available yet. Sync Index reads each file’s pages from Figma.' : `Sync Index and Scan usage are unavailable. ${NOT_CONNECTED}`;
+  // Sync Index button: "Sync Index" → "Syncing…" → "Synced" (3 s) ; a failed attempt is reported beside the last successful sync.
+  const syncLabel = (f: TrackedFile) => (f.indexSyncStatus === 'syncing' ? 'Syncing…' : state.syncedFlash === f.key ? 'Synced' : 'Sync Index');
+  const syncDisabled = (f: TrackedFile) => !fAd.canSync || f.indexSyncStatus === 'syncing';
+  const openIndex = (f: TrackedFile) => actions.setState({ fgOpen: f.key, fgPage: null, confirmFile: null });
+  const failedLine = (f: TrackedFile) => (f.indexSyncStatus === 'error' ? (
+    <span style={sx('font-size:12px; color:var(--destructive);')} title={f.indexSyncError || ''}>
+      Sync failed · <button type="button" disabled={!fAd.canSync} onClick={() => actions.syncFile(f.key)} style={sx('border:0; padding:0; background:transparent; font:inherit; color:inherit; text-decoration:underline; cursor:pointer;')}>Retry</button>
+    </span>
+  ) : null);
   const rowCols = isMobile ? 'minmax(0,1fr)' : 'minmax(0,2.4fr) 64px minmax(0,1fr) minmax(0,1.3fr) auto';
   const cards = c.issues.map((i) => cardOf(i, c));
   const toggleGroup = (ck: string) => actions.setState((s) => ({ idxCollapsed: { ...s.idxCollapsed, [ck]: !s.idxCollapsed[ck] } }));
@@ -63,15 +71,18 @@ export function FigmaFilesView() {
             </div>
             <div style={sx('display:flex; flex-wrap:wrap; gap:8px; align-items:center;')}>
               <OutlineLink href={fOpen.url} iconSize={14}>Open in Figma</OutlineLink>
-              <Button variant="outline" disabled={!fAd.canSync} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.syncFile(fOpen.key)}><ArrowsClockwiseIcon size={15} />Sync Index</Button>
-              <Button variant="outline" disabled={!fAd.canScan} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.scanFile(fOpen.key)}>Scan usage</Button>
+              <Button variant="outline" disabled={syncDisabled(fOpen)} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.syncFile(fOpen.key)}><ArrowsClockwiseIcon size={15} />{syncLabel(fOpen)}</Button>
+              <Button variant="outline" disabled={!fAd.canScan} title={fAd.canScan ? '' : fAd.scanReason} onClick={() => actions.scanFile(fOpen.key)}>Scan usage</Button>
             </div>
           </div>
-          {!fConn && <p style={sx('margin:0; font-size:12px; color:var(--muted-foreground);')}>{unavailable}</p>}
+          {fOpen.indexSyncStatus === 'error' && (
+            <p role="status" style={sx('margin:0; font-size:12px; color:var(--destructive);')}>{`Latest sync failed: ${fOpen.indexSyncError || 'unknown error'}${fOpen.index ? ` Showing the index from ${syncedLabel(fOpen.indexSyncedAt).replace(/^Last synced /, '')}.` : ''}`}</p>
+          )}
+          {!fLoading && <p style={sx('margin:0; font-size:12px; color:var(--muted-foreground);')}>{unavailable}</p>}
         </div>
         <div style={sx('display:grid; gap:24px; align-items:start;', { gridTemplateColumns: isMobile || state.width < 1100 ? 'minmax(0,1fr)' : '260px minmax(0,1fr)' })}>
-          <FileIndex title="Index" syncText={fOpen.indexSyncedAt ? `Synced ${formatShort(fOpen.indexSyncedAt)}` : 'Not synced'} groups={indexGroups(fOpen, fst.links, state.idxCollapsed, toggleGroup, state.fgPage, (id) => actions.setState({ fgPage: id }), '')}
-            emptyTitle="Index unavailable" emptyText={fConn ? 'Sync Index to read this file’s pages.' : 'This file hasn’t been indexed. Connect Figma, then Sync Index to read its real pages and groups. Nothing is shown until then.'} showSync={false} />
+          <FileIndex title="Index" syncText={fOpen.indexSyncStatus === 'syncing' ? 'Syncing…' : syncedLabel(fOpen.indexSyncedAt)} syncTextTitle={exactTime(fOpen.indexSyncedAt)} groups={indexGroups(fOpen, fst.links, state.idxCollapsed, toggleGroup, state.fgPage, (id) => actions.setState({ fgPage: id }), '')}
+            emptyTitle={fConn ? 'No index synced yet' : 'Index unavailable'} emptyText={fConn ? 'Use Sync Index to read this file’s pages from Figma.' : 'This file hasn’t been indexed. Connect Figma, then Sync Index to read its real pages and groups. Nothing is shown until then.'} showSync={false} />
           <section style={sx('display:flex; flex-direction:column; gap:16px; min-width:0;')}>
             {fsel ? (
               <>
@@ -103,7 +114,7 @@ export function FigmaFilesView() {
                 <h2 style={sx('margin:0; font-size:15px; font-weight:600;')}>File details</h2>
                 <KeyValues boxed cols="140px" rows={[
                   kv('Role', roleOf(fOpen.role).label), kv('Last updated', fOpen.lastModified ? formatShort(fOpen.lastModified) : 'Unknown, needs Figma', !fOpen.lastModified),
-                  kv('Pages', fOpen.pageCount == null ? 'Unknown, needs Figma' : String(fOpen.pageCount), fOpen.pageCount == null), kv('Last index sync', fOpen.indexSyncedAt ? formatShort(fOpen.indexSyncedAt) : 'Never', !fOpen.indexSyncedAt),
+                  kv('Pages', fOpen.pageCount == null ? 'Unknown, needs Figma' : String(fOpen.pageCount), fOpen.pageCount == null), kv('Last index sync', fOpen.indexSyncedAt ? `${syncedLabel(fOpen.indexSyncedAt).replace(/^Last synced /, '')} · ${exactTime(fOpen.indexSyncedAt)}` : 'Never synced', !fOpen.indexSyncedAt),
                   kv('Component usage', usageLine(fOpen), fOpen.usageStatus !== 'ok'), kv('Linked cards', String(fst.links.filter((l) => l.fileKey === fOpen.key).length)), kv('File key', fOpen.key)]} />
                 <p style={sx('margin:0; font-size:13px; color:var(--muted-foreground); text-wrap:pretty;')}>{fOpen.index ? 'Select a page in the index to see its path, linked Linear cards and a direct link to the page in Figma.' : 'Once indexed, this file’s real pages appear in the index panel and in Directory. Both views read the same index.'}</p>
               </>
@@ -118,11 +129,11 @@ export function FigmaFilesView() {
   return (
     <>
       <header style={sx('display:flex; flex-direction:column; gap:4px; min-width:0;')}>
-        <span style={sx('font-size:13px; color:var(--muted-foreground);')}>{`${fst.files.length} tracked file${fst.files.length === 1 ? '' : 's'} · Figma ${fConn ? 'connected' : 'not connected'} · saved in this browser`}</span>
+        <span style={sx('font-size:13px; color:var(--muted-foreground);')}>{`${fst.files.length} tracked file${fst.files.length === 1 ? '' : 's'} · Figma ${fLoading ? 'checking…' : fConn ? 'connected' : 'not connected'} · saved in this browser`}</span>
         <h1 style={sx(H1)}>Figma files</h1>
         <p style={sx('margin:0; color:var(--muted-foreground); text-wrap:pretty;')}>Files tracked by the design directory. Sync each file’s index and scan where components are used. Nothing here edits the Figma files.</p>
       </header>
-      {!fConn && <Banner minWidth={220} onAction={() => actions.setState({ dialog: 'integrations' })}>Figma isn’t connected. You can track files by link with the details you enter. Sync Index and Scan usage stay off until Figma is connected, and folders can’t be listed, so add each file by its own link.</Banner>}
+      {!fConn && !fLoading && <Banner minWidth={220} onAction={() => actions.setState({ dialog: 'integrations' })}>Figma isn’t connected. You can track files by link with the details you enter. Sync Index and Scan usage stay off until Figma is connected, and folders can’t be listed, so add each file by its own link.</Banner>}
       <form onSubmit={addFigmaFile} noValidate style={sx('display:grid; gap:12px; align-items:start; padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:var(--card);', { gridTemplateColumns: isMobile ? 'minmax(0,1fr)' : 'minmax(0,2.2fr) minmax(0,1.4fr) minmax(0,1fr) auto' })}>
         <div style={sx('display:flex; flex-direction:column; gap:6px; min-width:0;')}>
           <label htmlFor="fg-url" style={sx('font-size:13px; font-weight:500;')}>Figma file link</label>
@@ -149,12 +160,12 @@ export function FigmaFilesView() {
       </form>
       <div style={sx('display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; padding:12px 16px; border-radius:12px; background:var(--muted);')}>
         <label style={sx('display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500;')}>
-          <Switch checked={fst.skip.enabled} onCheckedChange={(v: boolean) => actions.mutateFstore((st) => ({ ...st, skip: { ...st.skip, enabled: !!v } }))} aria-label="Skip working pages" />
+          <Switch checked={fst.skip.enabled} onCheckedChange={(v: boolean) => { actions.mutateFstore((st) => ({ ...st, skip: { ...st.skip, enabled: !!v } })); actions.reapplySkip(); }} aria-label="Skip working pages" />
           Skip working pages when indexing
         </label>
         <div style={sx('display:flex; flex-wrap:wrap; gap:6px;', { opacity: fst.skip.enabled ? 1 : 0.5 })}>
           {SKIP_GROUPS.map((g) => (
-            <Toggle key={g} variant="outline" size="sm" pressed={fst.skip.groups.includes(g)} disabled={!fst.skip.enabled} onPressedChange={() => actions.mutateFstore((st) => ({ ...st, skip: { ...st.skip, groups: toggleIn(st.skip.groups, g) } }))}>{g}</Toggle>
+            <Toggle key={g} variant="outline" size="sm" pressed={fst.skip.groups.includes(g)} disabled={!fst.skip.enabled} onPressedChange={() => { actions.mutateFstore((st) => ({ ...st, skip: { ...st.skip, groups: toggleIn(st.skip.groups, g) } })); actions.reapplySkip(); }}>{g}</Toggle>
           ))}
         </div>
         <span style={sx('flex-basis:100%; font-size:12px; color:var(--muted-foreground);')}>{fst.skip.enabled ? 'Pressed groups are still listed in Directory, marked Skipped, and left out of usage scans.' : 'Every page group will be indexed and scanned.'}</span>
@@ -194,13 +205,19 @@ export function FigmaFilesView() {
                   </div>
                 </div>
                 <span style={sx('font-size:13px; font-variant-numeric:tabular-nums;', { color: f.pageCount == null ? MUTED : FGC })}>{f.pageCount == null ? (isMobile ? 'Pages —' : '—') : (isMobile ? `${f.pageCount} pages` : String(f.pageCount))}</span>
-                <span style={sx('font-size:13px;', { color: f.indexSyncedAt ? FGC : MUTED })}>{f.indexSyncedAt ? `Synced ${formatShort(f.indexSyncedAt)}` : 'Index not synced'}</span>
+                <span style={sx('display:flex; flex-direction:column; gap:2px; font-size:13px;')}>
+                  <span title={f.indexSyncedAt ? exactTime(f.indexSyncedAt) : 'No index synced yet'} style={{ color: f.indexSyncedAt ? FGC : MUTED }}>{f.indexSyncStatus === 'syncing' && !f.indexSyncedAt ? 'Syncing…' : syncedLabel(f.indexSyncedAt)}</span>
+                  {f.index && (
+                    <button type="button" onClick={() => openIndex(f)} className="hv-fg" title={`Open the index from ${exactTime(f.indexSyncedAt)}`} style={sx('align-self:flex-start; display:inline-flex; align-items:center; gap:4px; border:0; padding:0; background:transparent; font:inherit; font-size:12px; color:var(--muted-foreground); text-decoration:underline; cursor:pointer;')}><ListIcon size={12} />View index</button>
+                  )}
+                  {failedLine(f)}
+                </span>
                 <span style={sx('font-size:13px;', { color: f.usageStatus === 'ok' ? FGC : MUTED })}>{usageText}</span>
                 <div style={sx('display:flex; flex-wrap:wrap; align-items:center; gap:6px;', { justifyContent: isMobile ? 'flex-start' : 'flex-end' })}>
                   {!confirm && (
                     <>
-                      <Button variant="outline" size="sm" disabled={!fAd.canSync} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.syncFile(f.key)}>Sync Index</Button>
-                      <Button variant="outline" size="sm" disabled={!fAd.canScan} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.scanFile(f.key)}>Scan usage</Button>
+                      <Button variant="outline" size="sm" disabled={syncDisabled(f)} title={fAd.canSync ? '' : fAd.reason} onClick={() => actions.syncFile(f.key)}>{syncLabel(f)}</Button>
+                      <Button variant="outline" size="sm" disabled={!fAd.canScan} title={fAd.canScan ? '' : fAd.scanReason} onClick={() => actions.scanFile(f.key)}>Scan usage</Button>
                       <NativeSelect size="sm" aria-label={`Role for ${f.name}`} value={f.role} onChange={(e) => { const v = val(e) as TrackedFile['role']; actions.patchFile(f.key, { role: v }); actions.showToast(`Role set to ${roleOf(v).label}`); }}>
                         {ROLES.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                       </NativeSelect>
@@ -231,7 +248,7 @@ export function FigmaFilesView() {
           )}
           {fst.files.length > 0 && fList.length === 0 && <p style={sx('margin:0; padding:24px 16px; font-size:13px; color:var(--muted-foreground); text-align:center;')}>No files match.</p>}
         </div>
-        {!fConn && fst.files.length > 0 && <p style={sx('margin:0; font-size:12px; color:var(--muted-foreground);')}>{unavailable}</p>}
+        {!fLoading && fst.files.length > 0 && <p style={sx('margin:0; font-size:12px; color:var(--muted-foreground);')}>{unavailable}</p>}
       </section>
     </>
   );

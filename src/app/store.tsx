@@ -2,12 +2,13 @@
    (design/Design OS.dc.html). Views read from useApp(); they never call integrations directly. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { OWNER, PROJECT_TOPICS, SAMPLE_MODE } from '../config';
-import { emptyLinks, fetchLinearWorkspace, UnauthorizedError } from '../data/api';
-import { figmaAdapter } from '../data/figmaAdapter';
+import { emptyLinks, fetchLinearWorkspace, figmaApi, UnauthorizedError } from '../data/api';
+import { DisconnectedAdapter, ServerAdapter, type FigmaAdapter } from '../data/figmaAdapter';
 import { sampleFigmaFiles } from '../data/sample';
 import { loadFigmaStore, loadLibrary, PREF_KEYS, readPref, saveFigmaStore, saveLibrary, writePref } from '../data/storage';
-import type { Article, DesignLink, FigmaStore, IntegrationStatus, Library, LinearWorkspace, Source, TrackedFile } from '../data/types';
+import type { Article, DesignLink, FigmaFile, FigmaStore, IntegrationStatus, Library, LinearWorkspace, Source, TrackedFile } from '../data/types';
 import { buildIndex } from '../rules/figma';
+import { rebuildPages } from './rebuild';
 import { ctx as buildCtx, type Ctx } from '../rules/pdd';
 import { formatHash, parseHash, type ViewName } from './route';
 
@@ -29,6 +30,8 @@ export interface State {
   dir: { fileKey: string; search: string; pageId: string | null }; clNote: string; fgOpen: string | null; fgPage: string | null; idxCollapsed: Record<string, boolean>;
   lk: { issueId: string; fileKey: string; pageId: string; frame: string; version: string };
   linear: LinearWorkspace | null; signedOut: boolean;
+  /** null while /api/figma/status is loading. */
+  figmaConfigured: boolean | null; syncedFlash: string | null;
 }
 
 function initialState(): State {
@@ -48,7 +51,7 @@ function initialState(): State {
     fg: { url: '', name: '', role: 'product', touched: false, search: '', roleFilter: '', nameAuto: false }, confirmFile: null, fstore: loadFigmaStore(),
     dir: { fileKey: '', search: '', pageId: null }, clNote: '', fgOpen: r.view === 'figma' ? r.params.get('file') : null, fgPage: null, idxCollapsed: {},
     lk: { issueId: '', fileKey: '', pageId: '', frame: '', version: 'v1.0' },
-    linear: null, signedOut: false,
+    linear: null, signedOut: false, figmaConfigured: SAMPLE_MODE ? false : null, syncedFlash: null,
   };
 }
 
@@ -100,18 +103,32 @@ function useActions(stateRef: React.RefObject<State>, setState: (p: Patch, after
       setFg(p: Partial<State['fg']>) { setState((s) => ({ fg: { ...s.fg, ...p } })); },
       setDir(p: Partial<State['dir']>) { setState((s) => ({ dir: { ...s.dir, ...p } })); },
       setLk(p: Partial<State['lk']>) { setState((s) => ({ lk: { ...s.lk, ...p } })); },
+      /** Sync Index: fetch the file's pages, build the index with the skip rules, store it with the sync time.
+          A failed attempt never replaces the last successful index or its timestamp. */
       async syncFile(key: string) {
-        const st = S().fstore; const f = st.files.find((x) => x.key === key); if (!f) return;
+        const f = S().fstore.files.find((x) => x.key === key); if (!f || f.indexSyncStatus === 'syncing') return;
+        a.patchFile(key, { indexSyncStatus: 'syncing', indexAttemptedAt: new Date().toISOString() });
         try {
-          const r = await figmaAdapter.syncIndex(f, st.skip); const index = buildIndex(r.pages, S().fstore.skip);
-          a.patchFile(key, { index, pageCount: r.pages.length, lastModified: r.lastModified || null, indexSyncedAt: new Date().toISOString(), name: r.name || f.name, nameSource: r.name ? 'figma' : f.nameSource });
+          const r = await adapterOf(S()).syncIndex(f, S().fstore.skip);
+          const index = buildIndex(r.pages, S().fstore.skip);
+          a.patchFile(key, { index, pageCount: r.pages.length, lastModified: r.lastModified || null, thumbnailUrl: r.thumbnailUrl, indexSyncedAt: new Date().toISOString(), indexSyncStatus: null, indexSyncError: null, name: r.name || f.name, nameSource: r.name ? 'figma' : f.nameSource });
+          setState({ syncedFlash: key }); setTimeout(() => { if (S().syncedFlash === key) setState({ syncedFlash: null }); }, 3000);
           a.showToast(`Index synced · ${r.pages.length} pages`);
-        } catch (err) { a.showToast((err as Error).message); }
+        } catch (err) {
+          if (err instanceof UnauthorizedError) { setState({ signedOut: true }); return; }
+          const msg = (err as Error).message || 'Sync failed.';
+          a.patchFile(key, { indexSyncStatus: 'error', indexSyncError: msg });
+          a.showToast(`Sync failed · ${msg}`);
+        }
+      },
+      /** Re-apply the current skip rules to every stored index (no Figma call), so skipped marks stay truthful. */
+      reapplySkip() {
+        a.mutateFstore((st) => ({ ...st, files: st.files.map((f) => (f.index ? { ...f, index: buildIndex(rebuildPages(f.index), st.skip) } : f)) }));
       },
       async scanFile(key: string) {
         const f = S().fstore.files.find((x) => x.key === key); if (!f) return;
         a.patchFile(key, { usageStatus: 'running' });
-        try { const usage = await figmaAdapter.scanUsage(f, S().fstore.skip); a.patchFile(key, { usage, usageStatus: 'ok', usageScannedAt: new Date().toISOString(), usageError: null }); a.showToast('Usage scan complete'); }
+        try { const usage = await adapterOf(S()).scanUsage(f, S().fstore.skip); a.patchFile(key, { usage, usageStatus: 'ok', usageScannedAt: new Date().toISOString(), usageError: null }); a.showToast('Usage scan complete'); }
         catch (err) { a.patchFile(key, { usageStatus: f.usageStatus === 'ok' ? 'ok' : 'never', usageError: (err as Error).message }); a.showToast((err as Error).message); }
       },
       openLink(prefill: Partial<State['lk']>) { const s = S(); const key = s.dir.fileKey || s.fstore.files[0]?.key || ''; setState({ dialog: 'link', dirCard: null, lk: { issueId: '', fileKey: key, pageId: s.dir.pageId || '', frame: '', version: 'v1.0', ...prefill } }); },
@@ -128,10 +145,17 @@ function useActions(stateRef: React.RefObject<State>, setState: (p: Patch, after
 }
 export type Actions = ReturnType<typeof useActions>;
 
-interface AppValue { signOut: () => void; state: State; actions: Actions; c: Ctx; isMobile: boolean; dark: boolean; linearLoading: boolean; rootRef: React.RefObject<HTMLDivElement | null>; mainRef: React.RefObject<HTMLElement | null>; figmaRef: React.RefObject<HTMLElement | null>; attnRef: React.RefObject<HTMLElement | null> }
+interface AppValue { figma: FigmaAdapter; signOut: () => void; state: State; actions: Actions; c: Ctx; isMobile: boolean; dark: boolean; linearLoading: boolean; rootRef: React.RefObject<HTMLDivElement | null>; mainRef: React.RefObject<HTMLElement | null>; figmaRef: React.RefObject<HTMLElement | null>; attnRef: React.RefObject<HTMLElement | null> }
 const AppContext = createContext<AppValue | null>(null);
 
-const figmaStatus = (): IntegrationStatus => (SAMPLE_MODE ? { id: 'figma', name: 'Figma', mode: 'sample', label: 'Sample data' } : figmaAdapter.mode === 'connected' ? { id: 'figma', name: 'Figma', mode: 'connected', label: 'Connected' } : { id: 'figma', name: 'Figma', mode: 'disconnected', label: 'Not connected' });
+export const adapterOf = (s: Pick<State, 'figmaConfigured'>): FigmaAdapter => (s.figmaConfigured ? ServerAdapter : DisconnectedAdapter);
+const figmaStatus = (configured: boolean | null): IntegrationStatus => (SAMPLE_MODE ? { id: 'figma', name: 'Figma', mode: 'sample', label: 'Sample data' }
+  : configured ? { id: 'figma', name: 'Figma', mode: 'connected', label: 'Connected' }
+  : configured === null ? { id: 'figma', name: 'Figma', mode: 'disconnected', label: 'Loading…' }
+  : { id: 'figma', name: 'Figma', mode: 'disconnected', label: 'Not connected' });
+
+/** Tracked files that have real Figma metadata, shaped for the Overview / Lumin Work tiles. */
+const trackedAsFigmaFiles = (files: TrackedFile[]): FigmaFile[] => files.filter((f) => f.lastModified).map((f) => ({ key: f.key, name: f.name, projectName: f.scope ? 'New IA' : 'Tracked file', lastModified: f.lastModified!, url: f.url, thumbnailUrl: f.thumbnailUrl || null, frames: [] }));
 const LOADING: IntegrationStatus = { id: 'linear', name: 'Linear', mode: 'disconnected', label: 'Loading…' };
 
 export function AppProvider({ children, onSignedOut }: { children: ReactNode; onSignedOut: () => void }) {
@@ -161,6 +185,7 @@ export function AppProvider({ children, onSignedOut }: { children: ReactNode; on
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { if (stateRef.current.dialog) actions.closeDialog(); else actions.closeDetail(); } };
     window.addEventListener('keydown', onKey);
     actions.refreshLinear();
+    if (!SAMPLE_MODE) figmaApi.status().then((r) => setState({ figmaConfigured: r.configured })).catch((err) => { if (err instanceof UnauthorizedError) setState({ signedOut: true }); else setState({ figmaConfigured: false }); });
     const poll = setInterval(() => { if (document.visibilityState === 'visible') actions.refreshLinear(); }, 5 * 60_000);
     return () => { ro?.disconnect(); mq.removeEventListener('change', onMq); window.removeEventListener('keydown', onKey); clearInterval(poll); };
   }, [actions, setState]);
@@ -202,16 +227,16 @@ export function AppProvider({ children, onSignedOut }: { children: ReactNode; on
     issues: linear?.issues || [],
     projects: (linear?.projects || []).map((p) => ({ ...p, topics: p.topics.length ? p.topics : PROJECT_TOPICS[p.name] || [] })),
     cycle: linear?.cycle || null,
-    figmaFiles: SAMPLE_MODE ? sampleFigmaFiles() : [],
+    figmaFiles: SAMPLE_MODE ? sampleFigmaFiles() : trackedAsFigmaFiles(state.fstore.files),
     library: state.lib,
-    integrations: { linear: linear?.status || LOADING, figma: figmaStatus() },
+    integrations: { linear: linear?.status || LOADING, figma: figmaStatus(state.figmaConfigured) },
     links: linear?.links || emptyLinks,
     viewer: { ...OWNER, linearName: linear?.viewer?.name },
-  }), [linear, state.lib]);
+  }), [linear, state.lib, state.fstore.files, state.figmaConfigured]);
 
   const isMobile = state.width < 760;
   const dark = state.themePref === 'dark' || (state.themePref === 'system' && state.sysDark);
-  const value: AppValue = { signOut: onSignedOut, state, actions, c, isMobile, dark, linearLoading: !linear, rootRef, mainRef, figmaRef, attnRef };
+  const value: AppValue = { figma: adapterOf(state), signOut: onSignedOut, state, actions, c, isMobile, dark, linearLoading: !linear, rootRef, mainRef, figmaRef, attnRef };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 

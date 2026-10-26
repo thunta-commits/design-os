@@ -7,16 +7,16 @@ export interface IndexPageVM { id: string; name: string; count: string; hasCount
 export interface IndexGroupVM { id: string; name: string; skipped: boolean; expanded: boolean; countText: string; toggle: () => void; pages: IndexPageVM[] }
 
 interface Props {
-  title?: string; syncText?: string; groups: IndexGroupVM[]; emptyTitle?: string; emptyText?: string;
+  title?: string; syncText?: string; syncTextTitle?: string; groups: IndexGroupVM[]; emptyTitle?: string; emptyText?: string;
   showSync?: boolean; syncDisabled?: boolean; syncTitle?: string; onSync?: () => void; actionLabel?: string; onAction?: () => void;
 }
 
-export function FileIndex({ title = 'File index', syncText = '', groups, emptyTitle = 'No Figma index yet', emptyText = 'Sync this file’s index once Figma is connected. Pages appear here after the first sync.', showSync = true, syncDisabled = true, syncTitle = '', onSync, actionLabel = '', onAction }: Props) {
+export function FileIndex({ title = 'File index', syncText = '', syncTextTitle, groups, emptyTitle = 'No Figma index yet', emptyText = 'Sync this file’s index once Figma is connected. Pages appear here after the first sync.', showSync = true, syncDisabled = true, syncTitle = '', onSync, actionLabel = '', onAction }: Props) {
   return (
     <aside aria-label="File index" style={sx("display:flex; flex-direction:column; gap:10px; padding:14px; border:1px solid var(--border); border-radius:12px; background:var(--card); color:var(--foreground); font-family:'Inter', ui-sans-serif, system-ui, sans-serif; font-size:14px;")}>
       <div style={sx('display:flex; align-items:baseline; justify-content:space-between; gap:8px;')}>
         <strong style={sx('font-size:13px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;')}>{title}</strong>
-        <span style={sx('flex:none; font-size:12px; color:var(--muted-foreground);')}>{syncText}</span>
+        <span title={syncTextTitle} style={sx('flex:none; font-size:12px; color:var(--muted-foreground);')}>{syncText}</span>
       </div>
       {!groups.length && (
         <div style={sx('display:flex; flex-direction:column; gap:8px; padding:12px 4px; align-items:flex-start;')}>

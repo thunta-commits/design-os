@@ -4,13 +4,12 @@ import { Button, Input, LinkSimpleIcon, NativeSelect } from '../components/ds';
 import { FileIndex } from '../components/FileIndex';
 import { Pill } from '../components/Pill';
 import { H1, Loading } from '../components/ui';
-import { formatShort } from '../lib/dates';
+import { exactTime, formatShort, syncedLabel } from '../lib/dates';
 import { MONO, sx } from '../lib/sx';
-import { figmaAdapter } from '../data/figmaAdapter';
 import { cardOf, indexGroups } from './indexGroups';
 
 export function DirectoryView() {
-  const { state, actions, c, isMobile, linearLoading } = useApp();
+  const { state, actions, c, isMobile, linearLoading, figma: figmaAdapter } = useApp();
   const fst = state.fstore, dS = state.dir;
   const fConn = figmaAdapter.mode === 'connected';
   const dKey = fst.files.some((f) => f.key === dS.fileKey) ? dS.fileKey : fst.files[0]?.key || '';
@@ -52,10 +51,10 @@ export function DirectoryView() {
       </div>
       <div style={sx('display:grid; gap:24px; align-items:start;', { gridTemplateColumns: isMobile || state.width < 1100 ? 'minmax(0,1fr)' : '260px minmax(0,1fr)' })}>
         <FileIndex
-          title={dFile ? dFile.name : 'File index'} syncText={dFile ? (dFile.indexSyncedAt ? `Synced ${formatShort(dFile.indexSyncedAt)}` : 'Not synced') : ''} groups={groups}
-          emptyTitle={dFile ? 'No Figma index yet' : 'No tracked files'}
+          title={dFile ? dFile.name : 'File index'} syncText={dFile ? (dFile.indexSyncStatus === 'syncing' ? 'Syncing…' : syncedLabel(dFile.indexSyncedAt)) : ''} syncTextTitle={exactTime(dFile?.indexSyncedAt)} groups={groups}
+          emptyTitle={dFile ? (fConn ? 'No index synced yet' : 'No Figma index yet') : 'No tracked files'}
           emptyText={!dFile ? 'Add a Figma file by link to start building the directory.' : groups.length || !dFile.index ? noIndexText : 'No pages match.'}
-          showSync={!!dFile} syncDisabled={!figmaAdapter.canSync} syncTitle={figmaAdapter.canSync ? '' : figmaAdapter.reason} onSync={() => dFile && actions.syncFile(dFile.key)}
+          showSync={!!dFile} syncDisabled={!figmaAdapter.canSync || dFile?.indexSyncStatus === 'syncing'} syncTitle={figmaAdapter.canSync ? '' : figmaAdapter.reason} onSync={() => dFile && actions.syncFile(dFile.key)}
           actionLabel={dFile ? '' : 'Go to Figma files'} onAction={() => actions.go('figma')}
         />
         <section style={sx('display:flex; flex-direction:column; gap:14px; min-width:0;')}>

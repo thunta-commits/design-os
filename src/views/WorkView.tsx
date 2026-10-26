@@ -48,6 +48,7 @@ export function WorkView() {
   const banner = lin.mode === 'connected' && fig.mode === 'connected' ? null
     : lin.mode === 'sample' ? 'Linear and Figma aren’t connected. Issues, projects and files on this page are sample data showing how your real work will appear.'
     : lin.mode === 'error' ? `Linear couldn’t be loaded${lin.error ? `: ${lin.error}` : '.'} Nothing here is sample data.`
+    : lin.mode !== 'connected' && fig.mode === 'connected' ? 'Linear isn’t connected. Your issues and projects appear here once it is.'
     : lin.mode !== 'connected' ? 'Linear and Figma aren’t connected. Your issues, projects and files appear here once they are.'
     : 'Figma isn’t connected, so Figma work and design links on this page stay empty until it is.';
   const thStyle = sx('padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);');
@@ -199,8 +200,10 @@ export function WorkView() {
                 ) : (
                   <div style={sx('display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 12px; border:1px dashed var(--border); border-radius:10px; text-align:center;')}>
                     <strong style={sx('font-weight:600;')}>No Figma files</strong>
-                    <span style={sx('font-size:13px; color:var(--muted-foreground);')}>Recently edited files will appear here once Figma is connected.</span>
-                    <Button variant="outline" size="sm" onClick={openIntegrations}>Connect Figma</Button>
+                    <span style={sx('font-size:13px; color:var(--muted-foreground);')}>{fig.mode === 'connected' ? 'Tracked files appear here after their first Sync Index.' : 'Recently edited files will appear here once Figma is connected.'}</span>
+                    {fig.mode === 'connected'
+                      ? <Button variant="outline" size="sm" onClick={() => actions.go('figma')}>Go to Figma files</Button>
+                      : <Button variant="outline" size="sm" onClick={openIntegrations}>Connect Figma</Button>}
                   </div>
                 )}
               </div>
