@@ -58,7 +58,7 @@ let cache: { at: number; data: LinearWorkspace } | null = null;
 const base = (mode: LinearWorkspace['status']['mode'], label: string, error?: string): LinearWorkspace => ({
   status: { id: 'linear', name: 'Linear', mode, label, ...(error ? { error } : {}) },
   viewer: null, issues: [], projects: [], cycle: null, fetchedAt: null,
-  links: { myIssues: 'https://linear.app', activeCycle: 'https://linear.app', inbox: 'https://linear.app', figmaRecents: FIGMA_RECENTS },
+  links: { myIssues: `https://linear.app/${env('LINEAR_WORKSPACE_SLUG') || 'luminpdf'}/my-issues/assigned`, activeCycle: `https://linear.app/${env('LINEAR_WORKSPACE_SLUG') || 'luminpdf'}/my-issues/assigned`, inbox: `https://linear.app/${env('LINEAR_WORKSPACE_SLUG') || 'luminpdf'}/inbox`, figmaRecents: FIGMA_RECENTS },
 });
 
 export async function getLinearWorkspace({ refresh = false } = {}): Promise<LinearWorkspace> {

@@ -1,5 +1,5 @@
 // Browser → /api client. Views never call this directly; AppProvider does.
-import { FIGMA_RECENTS, SAMPLE_MODE } from '../config';
+import { FIGMA_RECENTS, LINEAR_WORKSPACE, SAMPLE_MODE } from '../config';
 import { sampleLinearWorkspace } from './sample';
 import type { LinearWorkspace } from './types';
 
@@ -13,7 +13,7 @@ async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
   return body as T;
 }
 
-export const emptyLinks = { myIssues: 'https://linear.app', activeCycle: 'https://linear.app', inbox: 'https://linear.app', figmaRecents: FIGMA_RECENTS };
+export const emptyLinks = { myIssues: `${LINEAR_WORKSPACE}/my-issues/assigned`, activeCycle: `${LINEAR_WORKSPACE}/my-issues/assigned`, inbox: `${LINEAR_WORKSPACE}/inbox`, figmaRecents: FIGMA_RECENTS };
 
 export async function fetchLinearWorkspace(refresh = false): Promise<LinearWorkspace> {
   if (SAMPLE_MODE) return sampleLinearWorkspace();

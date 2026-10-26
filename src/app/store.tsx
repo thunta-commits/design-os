@@ -2,7 +2,7 @@
    (design/Design OS.dc.html). Views read from useApp(); they never call integrations directly. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { OWNER, PROJECT_TOPICS, SAMPLE_MODE } from '../config';
-import { fetchLinearWorkspace, UnauthorizedError } from '../data/api';
+import { emptyLinks, fetchLinearWorkspace, UnauthorizedError } from '../data/api';
 import { figmaAdapter } from '../data/figmaAdapter';
 import { sampleFigmaFiles } from '../data/sample';
 import { loadFigmaStore, loadLibrary, PREF_KEYS, readPref, saveFigmaStore, saveLibrary, writePref } from '../data/storage';
@@ -205,7 +205,7 @@ export function AppProvider({ children, onSignedOut }: { children: ReactNode; on
     figmaFiles: SAMPLE_MODE ? sampleFigmaFiles() : [],
     library: state.lib,
     integrations: { linear: linear?.status || LOADING, figma: figmaStatus() },
-    links: linear?.links || { myIssues: 'https://linear.app', activeCycle: 'https://linear.app', inbox: 'https://linear.app', figmaRecents: 'https://www.figma.com/files/recents-and-sharing' },
+    links: linear?.links || emptyLinks,
     viewer: { ...OWNER, linearName: linear?.viewer?.name },
   }), [linear, state.lib]);
 
