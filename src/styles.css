@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@luminpdf/ds";
+@import "tw-animate-css";
+
+@source "../node_modules/@luminpdf/ds/components";
+
+/* Inter ships with the design system bundle (design/_ds/…/fonts). */
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("./assets/fonts/InterVariable.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: italic; font-weight: 100 900; font-display: swap; src: url("./assets/fonts/InterVariable-Italic.woff2") format("woff2"); }
+
+:root { --font-inter: "Inter"; }
+
+html, body, #root { margin: 0; height: 100%; }
+body { font-family: 'Inter', 'InterVariable', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+a:hover { color: var(--foreground); }
+
+/* The prototype's `style-hover` attributes. Inline styles win over classes, so these use !important. */
+.hv-muted:hover { background: var(--muted) !important; }
+.hv-accent:hover { background: var(--accent) !important; }
+.hv-sidebar:hover { background: var(--sidebar-accent) !important; }
+.hv-sidebar-fg:hover { background: var(--sidebar-accent) !important; color: var(--foreground) !important; }
+.hv-ring:hover { border-color: var(--ring) !important; }
+.hv-fg:hover { color: var(--foreground) !important; }
+.hv-underline:hover { text-decoration: underline !important; }
