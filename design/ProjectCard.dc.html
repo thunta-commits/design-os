@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/fonts/fonts.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/styles.css">
+  <script src="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.js"></script>
+</helmet>
+<button type="button" aria-pressed="{{ selected }}" onClick="{{ select }}" style="display:flex; flex-direction:column; gap:10px; width:100%; padding:14px; border:1px solid {{ borderColor }}; border-radius:10px; background:{{ bg }}; color:var(--card-foreground); text-align:left; cursor:pointer; font:inherit; box-shadow:0 1px 2px rgb(0 0 0 / 0.04);" style-hover="border-color:var(--ring);">
+  <span style="display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted-foreground);">
+    <span>{{ project.role }}</span><span>{{ project.target }}</span>
+  </span>
+  <span style="font-size:15px; font-weight:600; letter-spacing:-0.01em;">{{ project.name }}</span>
+  <x-import component-from-global-scope="LuminDS.Progress" value="{{ project.pct }}" hint-size="100%,4px"></x-import>
+  <span style="display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted-foreground);">
+    <span style="font-variant-numeric:tabular-nums;">{{ project.pctLabel }}</span><span>{{ project.openLabel }}</span>
+  </span>
+</button>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:300,&quot;height&quot;:140},&quot;project&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;ProjectVM&quot;},&quot;selected&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;onSelect&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(id: string) =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const project = this.props.project ?? { id: 'prj-sign-share', name: 'Sign & Share 2.0', role: 'Lead', target: 'Target 14 Nov', pct: 62, pctLabel: '62% complete', openLabel: '3 open issues' };
+    const selected = !!this.props.selected;
+    return {
+      project, selected,
+      borderColor: selected ? 'var(--primary)' : 'var(--border)',
+      bg: selected ? 'var(--accent)' : 'var(--card)',
+      select: () => this.props.onSelect && this.props.onSelect(project.id),
+    };
+  }
+}
+</script>
+</body>
+</html>

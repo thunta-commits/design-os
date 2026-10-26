@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/fonts/fonts.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/styles.css">
+  <script src="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.js"></script>
+  <script src="pdd-data.js"></script>
+  <script src="pdd-linear-snapshot.js"></script>
+  <script src="pdd-figma.js"></script>
+  <style>
+    html, body { margin: 0; }
+    body { font-family: 'Inter', 'InterVariable', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    a:hover { color: var(--foreground); }
+  </style>
+</helmet>
+<div ref="{{ rootRef }}" class="{{ themeClass }}" data-screen-label="{{ screenLabel }}" style="position:relative; height:{{ rootHeight }}; width:100%; overflow:hidden; display:flex; flex-direction:{{ shellDir }}; background:var(--background); color:var(--foreground); font-family:'Inter', ui-sans-serif, system-ui, sans-serif; font-size:14px; line-height:1.45;">
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <aside aria-label="Workspace" style="flex:none; width:248px; display:flex; flex-direction:column; gap:20px; padding:18px 14px; background:var(--sidebar); color:var(--sidebar-foreground); border-right:1px solid var(--sidebar-border); overflow-y:auto;">
+      <div style="display:flex; align-items:center; gap:10px; padding:0 4px;">
+        <span aria-hidden="true" style="flex:none; display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:999px; background:var(--primary); color:var(--primary-foreground); font-weight:600;">{{ viewerInitial }}</span>
+        <span style="display:flex; flex-direction:column; min-width:0;">
+          <strong style="font-size:14px; font-weight:600;">{{ viewer.name }}</strong>
+          <span style="font-size:12px; color:var(--muted-foreground);">{{ viewerSub }}</span>
+        </span>
+      </div>
+      <nav aria-label="Main" style="display:flex; flex-direction:column; gap:2px;">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+          <button type="button" onClick="{{ n.go }}" aria-current="{{ n.current }}" style="display:flex; align-items:center; gap:10px; height:36px; padding:0 10px; border:0; border-radius:8px; background:{{ n.bg }}; color:var(--sidebar-foreground); font:inherit; font-size:14px; font-weight:{{ n.weight }}; cursor:pointer; text-align:left;" style-hover="background:var(--sidebar-accent);">
+            <x-import component-from-global-scope="{{ n.icon }}" size="18" hint-size="18px,18px"></x-import>
+            <span style="flex:1;">{{ n.label }}</span>
+            <span style="font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ n.count }}</span>
+          </button>
+        </sc-for>
+      </nav>
+      <x-import component-from-global-scope="LuminDS.Button" variant="outline" onClick="{{ openSaveBlank }}" hint-size="100%,32px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="16" hint-size="16px,16px"></x-import>Save article</x-import>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="padding:0 6px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Integrations</span>
+        <sc-for list="{{ integrationList }}" as="s" hint-placeholder-count="2">
+          <button type="button" onClick="{{ openIntegrations }}" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--sidebar-border); border-radius:8px; background:var(--background); color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="border-color:var(--ring);">
+            <span aria-hidden="true" style="flex:none; width:8px; height:8px; border-radius:999px; background:{{ s.dot }};"></span>
+            <span style="flex:1; display:flex; flex-direction:column; min-width:0;">
+              <strong style="font-size:13px; font-weight:500;">{{ s.name }}</strong>
+              <span style="font-size:12px; color:var(--muted-foreground);">{{ s.label }}</span>
+            </span>
+            <x-import component-from-global-scope="LuminDS.PlugIcon" size="14" hint-size="14px,14px"></x-import>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span style="padding:0 6px 4px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Quick links</span>
+        <sc-for list="{{ quickLinks }}" as="q" hint-placeholder-count="3">
+          <a href="{{ q.href }}" target="_blank" rel="noreferrer" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:6px; font-size:13px; color:var(--muted-foreground); text-decoration:none;" style-hover="background:var(--sidebar-accent); color:var(--foreground);">{{ q.label }}<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+        </sc-for>
+      </div>
+      <div style="margin-top:auto; padding:0 4px;">
+        <x-import component-from-global-scope="LuminDS.ToggleGroup" type="single" variant="outline" size="sm" value="{{ themePref }}" onValueChange="{{ setTheme }}" aria-label="Theme" hint-size="104px,32px">
+          <x-import component-from-global-scope="LuminDS.ToggleGroupItem" value="system" aria-label="System theme" hint-size="32px,32px"><x-import component-from-global-scope="LuminDS.DesktopIcon" size="14" hint-size="14px,14px"></x-import></x-import>
+          <x-import component-from-global-scope="LuminDS.ToggleGroupItem" value="light" aria-label="Light theme" hint-size="32px,32px"><x-import component-from-global-scope="LuminDS.SunIcon" size="14" hint-size="14px,14px"></x-import></x-import>
+          <x-import component-from-global-scope="LuminDS.ToggleGroupItem" value="dark" aria-label="Dark theme" hint-size="32px,32px"><x-import component-from-global-scope="LuminDS.MoonIcon" size="14" hint-size="14px,14px"></x-import></x-import>
+        </x-import>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <header style="flex:none; display:flex; align-items:center; gap:10px; height:52px; padding:0 12px 0 16px; border-bottom:1px solid var(--border); background:var(--background);">
+      <span aria-hidden="true" style="display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; background:var(--primary); color:var(--primary-foreground); font-size:13px; font-weight:600;">{{ viewerInitial }}</span>
+      <strong style="flex:1; font-size:15px; font-weight:600;">Design Dashboard</strong>
+      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon" aria-label="Integrations" onClick="{{ openIntegrations }}" hint-size="36px,36px"><x-import component-from-global-scope="LuminDS.PlugIcon" size="18" hint-size="18px,18px"></x-import></x-import>
+      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon" aria-label="Toggle theme" onClick="{{ cycleTheme }}" hint-size="36px,36px"><x-import component-from-global-scope="{{ themeIcon }}" size="18" hint-size="18px,18px"></x-import></x-import>
+      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon" aria-label="Save article" onClick="{{ openSaveBlank }}" hint-size="36px,36px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="18" hint-size="18px,18px"></x-import></x-import>
+    </header>
+  </sc-if>
+
+  <main ref="{{ mainRef }}" id="main" style="position:relative; flex:1; min-width:0; min-height:0; overflow-y:auto;">
+    <div style="display:flex; flex-direction:column; gap:24px; max-width:1240px; margin:0 auto; padding:{{ pagePad }};">
+
+      <!-- ═════════ OVERVIEW ═════════ -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <header style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+            <span style="font-size:13px; color:var(--muted-foreground);">{{ ov.dateLine }}</span>
+            <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">{{ ov.greeting }}</h1>
+            <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">{{ ov.summary }}</p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <a href="{{ links.myIssues }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open Linear<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="15" hint-size="15px,15px"></x-import></a>
+            <x-import component-from-global-scope="LuminDS.Button" onClick="{{ openSaveBlank }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="15" hint-size="15px,15px"></x-import>Save article</x-import>
+          </div>
+        </header>
+
+        <section aria-label="At a glance" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+          <sc-for list="{{ ov.stats }}" as="st" hint-placeholder-count="4">
+            <button type="button" onClick="{{ st.go }}" style="display:flex; flex-direction:column; gap:2px; padding:14px 16px; border:1px solid var(--border); border-radius:12px; background:var(--card); color:var(--card-foreground); font:inherit; text-align:left; cursor:pointer; box-shadow:0 1px 2px rgb(0 0 0 / 0.04);" style-hover="border-color:var(--ring);">
+              <span style="font-size:12px; color:var(--muted-foreground);">{{ st.label }}</span>
+              <span style="font-size:28px; font-weight:600; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:{{ st.color }};">{{ st.value }}</span>
+              <span style="font-size:12px; color:var(--muted-foreground);">{{ st.sub }}</span>
+            </button>
+          </sc-for>
+        </section>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap:16px; align-items:start;">
+          <section style="display:flex; flex-direction:column; gap:14px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h2 style="margin:0; font-size:15px; font-weight:600;">What I’m working on</h2>
+              <sc-if value="{{ linearSample }}" hint-placeholder-val="{{ true }}"><dc-import name="Pill" label="{{ linearBadge }}" tone="sample" hint-size="auto,20px"></dc-import></sc-if>
+              <button type="button" onClick="{{ goWork }}" style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; border:0; background:transparent; font:inherit; font-size:13px; color:var(--muted-foreground); cursor:pointer;" style-hover="color:var(--foreground);">All work<x-import component-from-global-scope="LuminDS.ArrowRightIcon" size="14" hint-size="14px,14px"></x-import></button>
+            </div>
+            <sc-if value="{{ ov.hasFocus }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; flex-direction:column; gap:10px; padding:12px; border-radius:10px; background:var(--muted);">
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+                  <div style="display:flex; flex-direction:column; gap:2px;">
+                    <span style="font-size:12px; color:var(--muted-foreground);">{{ ov.focus.meta }}</span>
+                    <strong style="font-weight:600;">{{ ov.focus.name }}</strong>
+                  </div>
+                  <span style="font-weight:600; font-variant-numeric:tabular-nums;">{{ ov.focus.pctText }}</span>
+                </div>
+                <x-import component-from-global-scope="LuminDS.Progress" value="{{ ov.focus.pct }}" hint-size="100%,4px"></x-import>
+              </div>
+            </sc-if>
+            <div style="display:flex; flex-direction:column;">
+              <sc-for list="{{ ov.active }}" as="i" hint-placeholder-count="5">
+                <dc-import name="IssueRow" issue="{{ i }}" variant="{{ rowVariant }}" on-open="{{ openIssue }}" hint-size="100%,44px"></dc-import>
+              </sc-for>
+            </div>
+          </section>
+
+          <section ref="{{ attnRef }}" style="display:flex; flex-direction:column; gap:14px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card); scroll-margin-top:24px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h2 style="margin:0; font-size:15px; font-weight:600;">Needs attention</h2>
+              <span style="font-size:12px; color:var(--muted-foreground);">{{ ov.attentionCount }}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ ov.attention }}" as="a" hint-placeholder-count="4">
+                <button type="button" onClick="{{ a.open }}" style="display:flex; gap:12px; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--background); color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="border-color:var(--ring);">
+                  <span aria-hidden="true" style="flex:none; width:3px; border-radius:3px; background:{{ a.stripe }};"></span>
+                  <span style="display:flex; flex-direction:column; gap:2px; min-width:0;">
+                    <span style="font-size:12px; font-weight:600; color:{{ a.color }};">{{ a.reason }}</span>
+                    <span style="font-weight:500;">{{ a.title }}</span>
+                    <span style="font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px; color:var(--muted-foreground);">{{ a.meta }}</span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap:16px; align-items:start;">
+          <section style="display:flex; flex-direction:column; gap:14px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h2 style="margin:0; font-size:15px; font-weight:600;">Recent design work</h2>
+              <dc-import name="Pill" label="{{ figmaBadge }}" tone="sample" hint-size="auto,20px"></dc-import>
+              <button type="button" onClick="{{ goFigma }}" style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; border:0; background:transparent; font:inherit; font-size:13px; color:var(--muted-foreground); cursor:pointer;" style-hover="color:var(--foreground);">All files<x-import component-from-global-scope="LuminDS.ArrowRightIcon" size="14" hint-size="14px,14px"></x-import></button>
+            </div>
+            <sc-if value="{{ ov.hasFiles }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px;">
+                <sc-for list="{{ ov.files }}" as="f" hint-placeholder-count="3">
+                  <dc-import name="FigmaTile" file="{{ f }}" compact="{{ true }}" on-open-issue="{{ openIssue }}" hint-size="100%,190px"></dc-import>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ov.noFiles }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 12px; border:1px dashed var(--border); border-radius:10px; text-align:center;">
+                <strong style="font-weight:600;">No Figma files yet</strong>
+                <span style="font-size:13px; color:var(--muted-foreground);">Connect Figma to see files you edited recently.</span>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ openIntegrations }}" hint-size="auto,28px">Connect Figma</x-import>
+              </div>
+            </sc-if>
+          </section>
+
+          <section style="display:flex; flex-direction:column; gap:6px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <div style="display:flex; align-items:center; gap:8px; padding-bottom:6px;">
+              <h2 style="margin:0; font-size:15px; font-weight:600;">Recently saved</h2>
+              <button type="button" onClick="{{ goStorybook }}" style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; border:0; background:transparent; font:inherit; font-size:13px; color:var(--muted-foreground); cursor:pointer;" style-hover="color:var(--foreground);">Storybook<x-import component-from-global-scope="LuminDS.ArrowRightIcon" size="14" hint-size="14px,14px"></x-import></button>
+            </div>
+            <sc-for list="{{ ov.recentSaved }}" as="r" hint-placeholder-count="4">
+              <button type="button" onClick="{{ r.open }}" style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:10px 8px; border:0; border-bottom:1px solid var(--border); border-radius:0; background:transparent; color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+                <span style="display:flex; gap:6px; width:100%; font-size:12px; color:var(--muted-foreground);"><span style="font-weight:600; color:var(--foreground);">{{ r.topicName }}</span><span>·</span><span>{{ r.publication }}</span><span style="margin-left:auto;">{{ r.savedAgo }}</span></span>
+                <span style="font-weight:500;">{{ r.title }}</span>
+                <dc-import name="Pill" label="{{ r.statusLabel }}" tone="{{ r.status }}" hint-size="auto,20px"></dc-import>
+              </button>
+            </sc-for>
+          </section>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap:16px; align-items:start;">
+          <section style="display:flex; flex-direction:column; gap:6px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <div style="display:flex; align-items:center; gap:8px; padding-bottom:6px; flex-wrap:wrap;">
+              <h2 style="margin:0; font-size:15px; font-weight:600;">Reading for your current work</h2>
+              <span style="font-size:12px; color:var(--muted-foreground);">Matched by project and labels</span>
+            </div>
+            <sc-for list="{{ ov.suggestions }}" as="r" hint-placeholder-count="3">
+              <button type="button" onClick="{{ r.open }}" style="display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:10px 8px; border:0; border-bottom:1px solid var(--border); background:transparent; color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+                <span style="display:flex; gap:6px; font-size:12px; color:var(--muted-foreground);"><span style="font-weight:600; color:var(--foreground);">{{ r.topicName }}</span><span>·</span><span>{{ r.publication }}</span></span>
+                <span style="font-weight:500;">{{ r.title }}</span>
+                <span style="font-size:12px; color:var(--card-indigo-foreground);">{{ r.why }}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ ov.noSuggestions }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground);">Tag articles with the same labels you use in Linear to see them here.</p>
+            </sc-if>
+          </section>
+
+          <section style="display:flex; flex-direction:column; gap:12px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">Shortcuts</h2>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:8px;">
+              <sc-for list="{{ ov.shortcuts }}" as="s" hint-placeholder-count="6">
+                <button type="button" onClick="{{ s.go }}" style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border:1px solid var(--border); border-radius:10px; background:var(--background); color:var(--foreground); font:inherit; font-size:13px; font-weight:500; text-align:left; cursor:pointer;" style-hover="border-color:var(--ring);">
+                  <x-import component-from-global-scope="{{ s.icon }}" size="17" hint-size="17px,17px"></x-import>
+                  <span style="flex:1;">{{ s.label }}</span>
+                  <span style="font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ s.n }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ═════════ LUMIN WORK ═════════ -->
+      <sc-if value="{{ isWork }}" hint-placeholder-val="{{ false }}">
+        <header style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+            <span style="font-size:13px; color:var(--muted-foreground);">{{ wk.cycleLine }}</span>
+            <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">Lumin Work</h1>
+            <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">Issues and projects assigned to you in Linear, with the Figma work behind them.</p>
+          </div>
+          <a href="{{ links.myIssues }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">My issues in Linear<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="15" hint-size="15px,15px"></x-import></a>
+        </header>
+
+        <div role="note" style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; border:1px solid var(--custom-amber-200-dark-amber-900); border-radius:10px; background:var(--custom-amber-50-dark-amber-950); color:var(--custom-amber-900-dark-amber-50); font-size:13px;">
+          <x-import component-from-global-scope="LuminDS.InfoIcon" size="16" hint-size="16px,16px"></x-import>
+          <span style="flex:1; min-width:200px;">Linear and Figma aren’t connected. Issues, projects and files on this page are sample data showing how your real work will appear.</span>
+          <button type="button" onClick="{{ openIntegrations }}" style="border:0; background:transparent; font:inherit; font-weight:600; color:inherit; text-decoration:underline; cursor:pointer;">How to connect</button>
+        </div>
+
+        <section style="display:flex; flex-direction:column; gap:10px; padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">{{ wk.cycleName }}</h2>
+            <span style="font-size:12px; color:var(--muted-foreground);">{{ wk.cycleHint }}</span>
+            <a href="{{ wk.cycleUrl }}" target="_blank" rel="noreferrer" style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--muted-foreground); text-decoration:none;">Open cycle<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+          </div>
+          <x-import component-from-global-scope="LuminDS.Progress" value="{{ wk.cyclePct }}" hint-size="100%,4px"></x-import>
+        </section>
+
+        <section style="display:flex; flex-direction:column; gap:12px;">
+          <h2 style="margin:0; font-size:15px; font-weight:600;">Now and next</h2>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap:12px; align-items:start;">
+            <sc-for list="{{ wk.board }}" as="col" hint-placeholder-count="3">
+              <div style="display:flex; flex-direction:column; gap:8px; padding:10px; border-radius:12px; background:var(--muted);">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:2px 4px;">
+                  <dc-import name="Pill" label="{{ col.label }}" tone="{{ col.key }}" hint-size="auto,20px"></dc-import>
+                  <span style="font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ col.count }}</span>
+                </div>
+                <sc-for list="{{ col.items }}" as="i" hint-placeholder-count="2">
+                  <dc-import name="IssueCard" issue="{{ i }}" on-open="{{ openIssue }}" hint-size="100%,112px"></dc-import>
+                </sc-for>
+                <sc-if value="{{ col.showMore }}" hint-placeholder-val="{{ false }}">
+                  <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ col.more }}" hint-size="100%,28px">{{ col.moreLabel }}</x-import>
+                </sc-if>
+                <sc-if value="{{ col.empty }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0; padding:4px 4px 8px; font-size:13px; color:var(--muted-foreground);">{{ col.emptyText }}</p>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:flex; flex-direction:column; gap:12px;">
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">My projects</h2>
+            <span style="font-size:12px; color:var(--muted-foreground);">Select one to filter your issues</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap:12px;">
+            <sc-for list="{{ wk.projects }}" as="p" hint-placeholder-count="4">
+              <dc-import name="ProjectCard" project="{{ p }}" selected="{{ p.selected }}" on-select="{{ toggleProject }}" hint-size="100%,122px"></dc-import>
+            </sc-for>
+          </div>
+        </section>
+
+        <section style="display:flex; flex-direction:column; gap:14px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">My issues</h2>
+            <dc-import name="Pill" label="{{ linearBadge }}" tone="sample" hint-size="auto,20px"></dc-import>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="max-width:100%; overflow-x:auto;">
+              <x-import component-from-global-scope="LuminDS.Tabs" value="{{ w.view }}" onValueChange="{{ setWorkView }}" hint-size="auto,36px">
+                <x-import component-from-global-scope="LuminDS.TabsList" hint-size="auto,36px">
+                  <sc-for list="{{ wk.views }}" as="v" hint-placeholder-count="4">
+                    <x-import component-from-global-scope="LuminDS.TabsTrigger" value="{{ v.value }}" hint-size="auto,28px">{{ v.label }}<span style="font-size:11px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ v.count }}</span></x-import>
+                  </sc-for>
+                </x-import>
+              </x-import>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <div style="width:220px; max-width:100%;">
+                <x-import component-from-global-scope="LuminDS.Input" type="search" placeholder="Search issues" aria-label="Search issues" value="{{ w.search }}" onChange="{{ setWorkSearch }}" hint-size="100%,32px"></x-import>
+              </div>
+              <x-import component-from-global-scope="LuminDS.NativeSelect" aria-label="Project" value="{{ w.project }}" onChange="{{ setWorkProject }}" hint-size="160px,32px">
+                <option value="">All projects</option>
+                <sc-for list="{{ projectOptions }}" as="p" hint-placeholder-count="4"><option value="{{ p.id }}">{{ p.name }}</option></sc-for>
+              </x-import>
+              <x-import component-from-global-scope="LuminDS.NativeSelect" aria-label="Design" value="{{ w.design }}" onChange="{{ setWorkDesign }}" hint-size="160px,32px">
+                <option value="any">Any design state</option>
+                <option value="with">Has a design</option>
+                <option value="without">No design yet</option>
+              </x-import>
+            </div>
+          </div>
+
+          <sc-if value="{{ wk.hasRows }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+              <div style="overflow-x:auto; border:1px solid var(--border); border-radius:10px;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border); background:var(--muted);">
+                      <th scope="col" style="padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);">ID</th>
+                      <th scope="col" style="padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);">Issue</th>
+                      <th scope="col" style="padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);">Project</th>
+                      <th scope="col" style="padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);">Status</th>
+                      <sc-for list="{{ wk.sortHeadsA }}" as="h" hint-placeholder-count="1">
+                        <th scope="col" aria-sort="{{ h.ariaSort }}" style="padding:8px 12px; text-align:left;"><button type="button" onClick="{{ h.set }}" style="display:inline-flex; align-items:center; gap:4px; border:0; padding:0; background:transparent; font:inherit; font-weight:{{ h.weight }}; color:{{ h.color }}; cursor:pointer;">{{ h.label }}<sc-if value="{{ h.active }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LuminDS.ArrowDownIcon" size="12" hint-size="12px,12px"></x-import></sc-if></button></th>
+                      </sc-for>
+                      <th scope="col" style="padding:8px 12px; text-align:left; font-weight:500; color:var(--muted-foreground);">Design</th>
+                      <sc-for list="{{ wk.sortHeadsB }}" as="h" hint-placeholder-count="2">
+                        <th scope="col" aria-sort="{{ h.ariaSort }}" style="padding:8px 12px; text-align:left;"><button type="button" onClick="{{ h.set }}" style="display:inline-flex; align-items:center; gap:4px; border:0; padding:0; background:transparent; font:inherit; font-weight:{{ h.weight }}; color:{{ h.color }}; cursor:pointer;">{{ h.label }}<sc-if value="{{ h.active }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="LuminDS.ArrowDownIcon" size="12" hint-size="12px,12px"></x-import></sc-if></button></th>
+                      </sc-for>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <sc-for list="{{ wk.rows }}" as="r" hint-placeholder-count="8">
+                      <tr onClick="{{ r.open }}" style="border-bottom:1px solid var(--border); cursor:pointer;" style-hover="background:var(--muted);">
+                        <td style="padding:10px 12px; font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px; color:var(--muted-foreground); white-space:nowrap;">{{ r.identifier }}</td>
+                        <td style="padding:10px 12px; max-width:340px;"><span style="display:block; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.title }}</span></td>
+                        <td style="padding:10px 12px; color:var(--muted-foreground); white-space:nowrap;">{{ r.projectName }}</td>
+                        <td style="padding:10px 12px;"><dc-import name="Pill" label="{{ r.stateName }}" tone="{{ r.bucket }}" hint-size="auto,20px"></dc-import></td>
+                        <td style="padding:10px 12px; white-space:nowrap;"><span style="display:inline-flex; align-items:center; gap:4px; color:{{ r.priorityColor }};"><x-import component-from-global-scope="{{ r.priorityIcon }}" size="14" hint-size="14px,14px"></x-import>{{ r.priorityLabel }}</span></td>
+                        <td style="padding:10px 12px;"><dc-import name="Pill" label="{{ r.designLabel }}" tone="{{ r.designTone }}" hint-size="auto,20px"></dc-import></td>
+                        <td style="padding:10px 12px; white-space:nowrap; color:{{ r.dueColor }}; font-weight:{{ r.dueWeight }};">{{ r.dueText }}</td>
+                        <td style="padding:10px 12px; white-space:nowrap; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ r.updated }}</td>
+                      </tr>
+                    </sc-for>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
+            <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; margin:0 -8px;">
+                <sc-for list="{{ wk.rows }}" as="r" hint-placeholder-count="6">
+                  <dc-import name="IssueRow" issue="{{ r }}" variant="compact" on-open="{{ openIssue }}" hint-size="100%,44px"></dc-import>
+                </sc-for>
+              </div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ wk.noRows }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:28px 12px; border:1px dashed var(--border); border-radius:10px; text-align:center;">
+              <strong style="font-weight:600;">No issues match</strong>
+              <span style="font-size:13px; color:var(--muted-foreground);">Try another view or clear the filters.</span>
+              <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ clearWorkFilters }}" hint-size="auto,28px">Clear filters</x-import>
+            </div>
+          </sc-if>
+        </section>
+
+        <section ref="{{ figmaRef }}" style="display:flex; flex-direction:column; gap:14px; min-width:0; padding:18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">Figma work</h2>
+            <dc-import name="Pill" label="{{ figmaBadge }}" tone="sample" hint-size="auto,20px"></dc-import>
+            <a href="{{ links.figmaRecents }}" target="_blank" rel="noreferrer" style="margin-left:auto; display:inline-flex; align-items:center; gap:4px; font-size:13px; color:var(--muted-foreground); text-decoration:none;">Figma recents<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap:20px; align-items:start;">
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:0;">
+              <span style="font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Recently updated</span>
+              <sc-if value="{{ wk.hasFiles }}" hint-placeholder-val="{{ true }}">
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:12px;">
+                  <sc-for list="{{ wk.files }}" as="f" hint-placeholder-count="4">
+                    <dc-import name="FigmaTile" file="{{ f }}" on-open-issue="{{ openIssue }}" hint-size="100%,220px"></dc-import>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ wk.noFiles }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:24px 12px; border:1px dashed var(--border); border-radius:10px; text-align:center;">
+                  <strong style="font-weight:600;">No Figma files</strong>
+                  <span style="font-size:13px; color:var(--muted-foreground);">Recently edited files will appear here once Figma is connected.</span>
+                  <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ openIntegrations }}" hint-size="auto,28px">Connect Figma</x-import>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:0;">
+              <span style="font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">{{ wk.missingLabel }}</span>
+              <div style="display:flex; flex-direction:column; margin:0 -8px;">
+                <sc-for list="{{ wk.missing }}" as="i" hint-placeholder-count="5">
+                  <dc-import name="IssueRow" issue="{{ i }}" variant="status-only" on-open="{{ openIssue }}" hint-size="100%,44px"></dc-import>
+                </sc-for>
+              </div>
+              <p style="margin:0; font-size:12px; color:var(--muted-foreground);">Files link to an issue when they’re attached in Linear or when the issue ID is in the file name.</p>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- ═════════ STORYBOOK ═════════ -->
+      <sc-if value="{{ isStorybook }}" hint-placeholder-val="{{ false }}">
+        <header style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px 24px;">
+          <div style="display:flex; flex-direction:column; gap:6px; min-width:0; max-width:600px;">
+            <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">Storybook</h1>
+            <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">Articles, books and guides on UX, UI, design systems, AI in design, research and product thinking.</p>
+            <span style="font-size:12px; color:var(--muted-foreground);">{{ sbk.headLine }}</span>
+          </div>
+          <div style="flex:1; display:flex; align-items:center; justify-content:flex-end; gap:8px; min-width:260px;">
+            <div style="flex:1; max-width:320px;">
+              <x-import component-from-global-scope="LuminDS.Input" type="search" placeholder="Search titles, notes, #tags" aria-label="Search library" value="{{ sb.search }}" onChange="{{ setSbSearch }}" hint-size="100%,32px"></x-import>
+            </div>
+            <x-import component-from-global-scope="LuminDS.Button" onClick="{{ openSaveBlank }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="15" hint-size="15px,15px"></x-import>Save article</x-import>
+          </div>
+        </header>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+            <div style="max-width:100%; overflow-x:auto;">
+              <x-import component-from-global-scope="LuminDS.Tabs" value="{{ sb.view }}" onValueChange="{{ setSbView }}" hint-size="auto,36px">
+                <x-import component-from-global-scope="LuminDS.TabsList" hint-size="auto,36px">
+                  <sc-for list="{{ sbk.views }}" as="v" hint-placeholder-count="5">
+                    <x-import component-from-global-scope="LuminDS.TabsTrigger" value="{{ v.value }}" hint-size="auto,28px">{{ v.label }}<span style="font-size:11px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ v.count }}</span></x-import>
+                  </sc-for>
+                </x-import>
+              </x-import>
+            </div>
+            <sc-if value="{{ sbk.notSources }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+                  <x-import component-from-global-scope="LuminDS.Toggle" variant="outline" size="sm" pressed="{{ sb.railOpen }}" onPressedChange="{{ toggleRail }}" aria-label="Show topics and collections" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.SidebarIcon" size="15" hint-size="15px,15px"></x-import>Browse</x-import>
+                </sc-if>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" aria-expanded="{{ sb.filterOpen }}" onClick="{{ toggleFilter }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.FunnelSimpleIcon" size="15" hint-size="15px,15px"></x-import>Filter<sc-if value="{{ sbk.hasFilterCount }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--primary); color:var(--primary-foreground); font-size:11px; font-weight:600;">{{ sbk.filterCount }}</span></sc-if></x-import>
+                <x-import component-from-global-scope="LuminDS.ToggleGroup" type="single" variant="outline" size="sm" value="{{ sb.layout }}" onValueChange="{{ setSbLayout }}" aria-label="Layout" hint-size="64px,32px">
+                  <x-import component-from-global-scope="LuminDS.ToggleGroupItem" value="grid" aria-label="Card view" hint-size="32px,32px"><x-import component-from-global-scope="LuminDS.SquaresFourIcon" size="15" hint-size="15px,15px"></x-import></x-import>
+                  <x-import component-from-global-scope="LuminDS.ToggleGroupItem" value="list" aria-label="List view" hint-size="32px,32px"><x-import component-from-global-scope="LuminDS.ListIcon" size="15" hint-size="15px,15px"></x-import></x-import>
+                </x-import>
+                <sc-if value="{{ sb.filterOpen }}" hint-placeholder-val="{{ false }}">
+                  <button type="button" aria-label="Close filters" onClick="{{ closeFilter }}" style="position:fixed; inset:0; z-index:20; border:0; background:transparent; cursor:default;"></button>
+                  <div role="dialog" aria-label="Filter articles" style="position:absolute; top:calc(100% + 8px); right:0; z-index:21; width:320px; max-width:calc(100vw - 32px); display:flex; flex-direction:column; gap:12px; padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--popover); color:var(--popover-foreground); box-shadow:0 12px 40px rgb(0 0 0 / 0.14);">
+                    <strong style="font-size:14px; font-weight:600;">Filter articles</strong>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Topic</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sbTopicValue }}" onChange="{{ setSbTopic }}" hint-size="100%,32px"><option value="">Any topic</option><sc-for list="{{ topicOptions }}" as="t" hint-placeholder-count="7"><option value="{{ t.id }}">{{ t.name }}</option></sc-for></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Collection</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sbCollectionValue }}" onChange="{{ setSbCollection }}" hint-size="100%,32px"><option value="">Any collection</option><sc-for list="{{ sbk.collections }}" as="c" hint-placeholder-count="3"><option value="{{ c.id }}">{{ c.name }}</option></sc-for></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Project</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sb.project }}" onChange="{{ setSbProject }}" hint-size="100%,32px"><option value="">Any project</option><sc-for list="{{ projectOptions }}" as="p" hint-placeholder-count="4"><option value="{{ p.id }}">{{ p.name }}</option></sc-for></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Source</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sb.source }}" onChange="{{ setSbSource }}" hint-size="100%,32px"><option value="">Any source</option><sc-for list="{{ sbk.sourceOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Status</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sb.status }}" onChange="{{ setSbStatus }}" hint-size="100%,32px"><option value="">Any status</option><option value="to-read">To read</option><option value="reading">Reading</option><option value="read">Read</option></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Saved</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sb.saved }}" onChange="{{ setSbSaved }}" hint-size="100%,32px"><option value="">Any time</option><option value="recent">Last 14 days</option></x-import></div></label>
+                    <label style="display:grid; grid-template-columns:84px minmax(0,1fr); align-items:center; gap:10px;"><span style="font-size:12px; color:var(--muted-foreground);">Sort</span><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ sb.sort }}" onChange="{{ setSbSort }}" hint-size="100%,32px"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A–Z</option><option value="status">Reading status</option></x-import></div></label>
+                    <div style="display:flex; justify-content:space-between; gap:8px; padding-top:4px;">
+                      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ clearSbFilters }}" hint-size="auto,28px">Clear all</x-import>
+                      <x-import component-from-global-scope="LuminDS.Button" size="sm" onClick="{{ closeFilter }}" hint-size="auto,28px">Done</x-import>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ sbk.isSourcesView }}" hint-placeholder-val="{{ false }}">
+              <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ openAddSource }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="15" hint-size="15px,15px"></x-import>Add source</x-import>
+            </sc-if>
+          </div>
+          <sc-if value="{{ sbk.showChips }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+              <sc-for list="{{ sbk.chips }}" as="ch" hint-placeholder-count="2">
+                <button type="button" onClick="{{ ch.remove }}" aria-label="Remove filter {{ ch.label }}" style="display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 8px 0 10px; border:0; border-radius:999px; background:var(--muted); color:var(--foreground); font:inherit; font-size:12px; cursor:pointer;" style-hover="background:var(--accent);">{{ ch.label }}<x-import component-from-global-scope="LuminDS.XIcon" size="12" hint-size="12px,12px"></x-import></button>
+              </sc-for>
+              <button type="button" onClick="{{ clearSbFilters }}" style="height:26px; padding:0 6px; border:0; background:transparent; font:inherit; font-size:12px; color:var(--muted-foreground); text-decoration:underline; cursor:pointer;">Clear all</button>
+            </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ sbk.notSources }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid; grid-template-columns:{{ libraryCols }}; gap:32px; align-items:start;">
+            <sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+              <aside aria-label="Topics and collections" style="display:flex; flex-direction:column; gap:20px; position:sticky; top:0; padding-top:2px;">
+                <div role="group" aria-label="Topics" style="display:flex; flex-direction:column; gap:1px;">
+                  <span style="padding:0 8px 6px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Topics</span>
+                  <sc-for list="{{ sbk.topics }}" as="t" hint-placeholder-count="8">
+                    <button type="button" aria-pressed="{{ t.pressed }}" onClick="{{ t.toggle }}" style="display:flex; align-items:center; gap:8px; height:30px; padding:0 8px; border:0; border-radius:6px; background:{{ t.bg }}; color:{{ t.color }}; font:inherit; font-size:13px; font-weight:{{ t.weight }}; text-align:left; cursor:pointer;" style-hover="color:var(--foreground);">
+                      <span style="flex:1;">{{ t.name }}</span><span style="font-size:11px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ t.n }}</span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div role="group" aria-label="Collections" style="display:flex; flex-direction:column; gap:1px;">
+                  <span style="padding:0 8px 6px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Collections</span>
+                  <sc-for list="{{ sbk.collections }}" as="c" hint-placeholder-count="3">
+                    <button type="button" aria-pressed="{{ c.pressed }}" onClick="{{ c.toggle }}" style="display:flex; align-items:center; gap:8px; height:30px; padding:0 8px; border:0; border-radius:6px; background:{{ c.bg }}; color:{{ c.color }}; font:inherit; font-size:13px; font-weight:{{ c.weight }}; text-align:left; cursor:pointer;" style-hover="color:var(--foreground);">
+                      <span style="flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ c.name }}</span><span style="font-size:11px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ c.n }}</span>
+                    </button>
+                  </sc-for>
+                  <form onSubmit="{{ createCollection }}" style="display:flex; gap:4px; align-items:center; margin-top:6px;">
+                    <x-import component-from-global-scope="LuminDS.Input" placeholder="New collection" aria-label="New collection name" value="{{ sb.newCol }}" onChange="{{ setNewCol }}" hint-size="100%,32px"></x-import>
+                    <x-import component-from-global-scope="LuminDS.Button" type="submit" variant="ghost" size="icon-sm" aria-label="Create collection" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="15" hint-size="15px,15px"></x-import></x-import>
+                  </form>
+                </div>
+              </aside>
+            </sc-if>
+
+            <section aria-label="Articles" style="display:flex; flex-direction:column; gap:14px; min-width:0;">
+              <span aria-live="polite" style="font-size:13px; color:var(--muted-foreground);"><strong style="font-weight:600; color:var(--foreground);">{{ sbk.count }}</strong> {{ sbk.countText }}</span>
+              <sc-if value="{{ sbk.isEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:48px 12px; border-radius:12px; background:var(--muted); text-align:center;">
+                  <strong style="font-weight:600;">{{ sbk.emptyTitle }}</strong>
+                  <span style="font-size:13px; color:var(--muted-foreground);">{{ sbk.emptyBody }}</span>
+                  <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ sbk.emptyAction }}" hint-size="auto,28px">{{ sbk.emptyActionLabel }}</x-import>
+                </div>
+              </sc-if>
+              <sc-if value="{{ sbk.showGrid }}" hint-placeholder-val="{{ true }}">
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap:16px; align-items:stretch;">
+                  <sc-for list="{{ sbk.results }}" as="a" hint-placeholder-count="6">
+                    <dc-import name="ArticleCard" article="{{ a }}" layout="grid" on-open="{{ openArticle }}" on-toggle-fav="{{ toggleFav }}" hint-size="100%,230px"></dc-import>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ sbk.showList }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+                  <sc-for list="{{ sbk.results }}" as="a" hint-placeholder-count="6">
+                    <dc-import name="ArticleCard" article="{{ a }}" layout="list" compact="{{ isMobile }}" on-open="{{ openArticle }}" on-toggle-fav="{{ toggleFav }}" hint-size="100%,56px"></dc-import>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </section>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ sbk.isSourcesView }}" hint-placeholder-val="{{ false }}">
+          <section aria-label="Sources" style="display:flex; flex-direction:column; gap:12px;">
+            <p style="margin:0; font-size:13px; color:var(--muted-foreground); text-wrap:pretty;">{{ sbk.sourcesNote }}</p>
+            <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+              <sc-for list="{{ sbk.sources }}" as="s" hint-placeholder-count="5">
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; padding:14px 16px; border-bottom:1px solid var(--border);">
+                  <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:3px; opacity:{{ s.opacity }};">
+                    <span style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><strong style="font-size:14px; font-weight:600;">{{ s.name }}</strong><dc-import name="Pill" label="{{ s.statusLabel }}" tone="{{ s.statusTone }}" hint-size="auto,20px"></dc-import></span>
+                    <a href="{{ s.url }}" target="_blank" rel="noreferrer" style="font-size:12px; color:var(--muted-foreground); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" style-hover="text-decoration:underline;">{{ s.urlLabel }}</a>
+                    <span style="font-size:12px; color:var(--muted-foreground);">{{ s.meta }}</span>
+                  </div>
+                  <span style="font-size:13px; color:var(--muted-foreground); font-variant-numeric:tabular-nums; opacity:{{ s.opacity }};">{{ s.counts }}</span>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <sc-if value="{{ s.notConfirm }}" hint-placeholder-val="{{ true }}">
+                      <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" disabled="{{ s.noItems }}" onClick="{{ s.browse }}" hint-size="auto,28px">Browse</x-import>
+                      <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted-foreground);"><x-import component-from-global-scope="LuminDS.Switch" checked="{{ s.enabled }}" onCheckedChange="{{ s.toggle }}" aria-label="{{ s.toggleLabel }}" hint-size="32px,18px"></x-import>{{ s.switchText }}</label>
+                      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="{{ s.removeLabel }}" onClick="{{ s.askRemove }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.TrashIcon" size="15" hint-size="15px,15px"></x-import></x-import>
+                    </sc-if>
+                    <sc-if value="{{ s.confirm }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:13px;">Remove this source?</span>
+                      <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ s.cancelRemove }}" hint-size="auto,28px">Cancel</x-import>
+                      <x-import component-from-global-scope="LuminDS.Button" variant="destructive" size="sm" onClick="{{ s.remove }}" hint-size="auto,28px">Remove</x-import>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ sbk.noSources }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:40px 12px; text-align:center;">
+                  <strong style="font-weight:600;">No sources yet</strong>
+                  <span style="font-size:13px; color:var(--muted-foreground);">Add a website, blog, newsletter or release feed you want to follow.</span>
+                </div>
+              </sc-if>
+            </div>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      <!-- ═════════ DIRECTORY ═════════ -->
+      <sc-if value="{{ isDirectory }}" hint-placeholder-val="{{ false }}">
+        <header style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px;">
+          <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+            <span style="font-size:13px; color:var(--muted-foreground);">{{ dirv.headLine }}</span>
+            <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">Directory</h1>
+            <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">Each Figma file’s index, the Linear cards designed in it, and their versions and changelog.</p>
+          </div>
+        </header>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+          <x-import component-from-global-scope="LuminDS.NativeSelect" aria-label="Figma file" value="{{ dirv.fileKey }}" onChange="{{ setDirFile }}" disabled="{{ dirv.noFiles }}" hint-size="240px,32px">
+            <sc-if value="{{ dirv.noFiles }}" hint-placeholder-val="{{ false }}"><option value="">No tracked files</option></sc-if>
+            <sc-for list="{{ dirv.fileOptions }}" as="f" hint-placeholder-count="2"><option value="{{ f.key }}">{{ f.name }}</option></sc-for>
+          </x-import>
+          <div style="width:260px; max-width:100%;">
+            <x-import component-from-global-scope="LuminDS.Input" type="search" placeholder="Filter pages and cards" aria-label="Filter pages and cards" value="{{ dir.search }}" onChange="{{ setDirSearch }}" hint-size="100%,32px"></x-import>
+          </div>
+          <x-import component-from-global-scope="LuminDS.Button" onClick="{{ openLinkBlank }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.LinkSimpleIcon" size="15" hint-size="15px,15px"></x-import>Link a card</x-import>
+        </div>
+        <div style="display:grid; grid-template-columns:{{ dirCols }}; gap:24px; align-items:start;">
+          <dc-import name="FileIndex" title="{{ dirv.fileName }}" sync-text="{{ dirv.fileSync }}" groups="{{ dirv.groups }}" empty-title="{{ dirv.emptyTitle }}" empty-text="{{ dirv.emptyText }}" show-sync="{{ dirv.hasFile }}" sync-disabled="{{ dirv.syncDisabled }}" sync-title="{{ dirv.syncTitle }}" on-sync="{{ dirv.syncCurrent }}" action-label="{{ dirv.actionLabel }}" on-action="{{ goFigmaFiles }}" hint-size="100%,220px"></dc-import>
+          <section style="display:flex; flex-direction:column; gap:14px; min-width:0;">
+            <sc-if value="{{ dirv.hasPage }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <span style="font-size:12px; color:var(--muted-foreground);">{{ dirv.pagePath }}</span>
+                <h2 style="margin:0; font-size:18px; font-weight:600; letter-spacing:-0.01em;">{{ dirv.pageName }}</h2>
+              </div>
+              <span style="font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Cards designed on this page</span>
+              <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+                <sc-for list="{{ dirv.pageCards }}" as="c" hint-placeholder-count="1">
+                  <button type="button" onClick="{{ c.open }}" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:0; border-bottom:1px solid var(--border); background:transparent; color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+                    <span style="flex:none; width:64px; font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px; color:var(--muted-foreground);">{{ c.id }}</span>
+                    <span style="flex:1; min-width:0; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ c.title }}</span>
+                    <dc-import name="Pill" label="{{ c.status }}" tone="{{ c.tone }}" hint-size="auto,20px"></dc-import>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ dirv.noPageCards }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0; padding:20px 14px; font-size:13px; color:var(--muted-foreground);">No cards linked to this page yet. Use Link a card.</p>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dirv.noPage }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h2 style="margin:0; font-size:15px; font-weight:600;">Your Linear cards</h2>
+                <dc-import name="Pill" label="{{ dirv.linearBadge }}" tone="info" hint-size="auto,20px"></dc-import>
+              </div>
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground); text-wrap:pretty;">{{ dirv.linearLine }}</p>
+              <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+                <sc-for list="{{ dirv.cards }}" as="c" hint-placeholder-count="6">
+                  <button type="button" onClick="{{ c.open }}" style="display:flex; align-items:center; gap:12px; padding:10px 14px; border:0; border-bottom:1px solid var(--border); background:transparent; color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+                    <span style="flex:none; width:56px; font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px; color:var(--muted-foreground);">{{ c.id }}</span>
+                    <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;">
+                      <span style="font-weight:500; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-wrap:pretty;">{{ c.title }}</span>
+                      <span style="font-size:12px; color:var(--muted-foreground); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ c.meta }}</span>
+                    </span>
+                    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}"><dc-import name="Pill" label="{{ c.linkText }}" tone="{{ c.linkTone }}" hint-size="auto,20px"></dc-import></sc-if>
+                    <dc-import name="Pill" label="{{ c.status }}" tone="{{ c.tone }}" hint-size="auto,20px"></dc-import>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ dirv.noCards }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0; padding:20px 14px; font-size:13px; color:var(--muted-foreground);">No Linear cards match.</p>
+                </sc-if>
+              </div>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ═════════ FIGMA FILES ═════════ -->
+      <sc-if value="{{ isFigmaFiles }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ fgd.notOpen }}" hint-placeholder-val="{{ true }}">
+        <header style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+          <span style="font-size:13px; color:var(--muted-foreground);">{{ fgv.headLine }}</span>
+          <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">Figma files</h1>
+          <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">Files tracked by the design directory. Sync each file’s index and scan where components are used. Nothing here edits the Figma files.</p>
+        </header>
+        <sc-if value="{{ fgv.notConnected }}" hint-placeholder-val="{{ true }}">
+          <div role="note" style="display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:10px 14px; border:1px solid var(--custom-amber-200-dark-amber-900); border-radius:10px; background:var(--custom-amber-50-dark-amber-950); color:var(--custom-amber-900-dark-amber-50); font-size:13px;">
+            <x-import component-from-global-scope="LuminDS.InfoIcon" size="16" hint-size="16px,16px"></x-import>
+            <span style="flex:1; min-width:220px; text-wrap:pretty;">{{ fgv.statusLine }}</span>
+            <button type="button" onClick="{{ openIntegrations }}" style="border:0; background:transparent; font:inherit; font-weight:600; color:inherit; text-decoration:underline; cursor:pointer;">How to connect</button>
+          </div>
+        </sc-if>
+        <form onSubmit="{{ addFigmaFile }}" novalidate="{{ true }}" style="display:grid; grid-template-columns:{{ fgAddCols }}; gap:12px; align-items:start; padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+          <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+            <label for="fg-url" style="font-size:13px; font-weight:500;">Figma file link</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="fg-url" type="url" placeholder="https://www.figma.com/design/…" value="{{ fg.url }}" aria-invalid="{{ fgv.urlInvalid }}" onChange="{{ setFgUrl }}" hint-size="100%,32px"></x-import>
+            <span style="font-size:12px; color:var(--destructive);">{{ fgv.err.url }}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+            <label for="fg-name" style="font-size:13px; font-weight:500;">Name</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="fg-name" placeholder="LEX UI-003 - Settings" value="{{ fg.name }}" aria-invalid="{{ fgv.nameInvalid }}" onChange="{{ setFgName }}" hint-size="100%,32px"></x-import>
+            <span style="font-size:12px; color:{{ fgv.nameHintColor }};">{{ fgv.nameHint }}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+            <label for="fg-role" style="font-size:13px; font-weight:500;">Role</label>
+            <div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" id="fg-role" value="{{ fg.role }}" onChange="{{ setFgRole }}" hint-size="100%,32px">
+              <sc-for list="{{ fgv.roles }}" as="r" hint-placeholder-count="4"><option value="{{ r.id }}">{{ r.label }}</option></sc-for>
+            </x-import></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span aria-hidden="true" style="font-size:13px; font-weight:500; visibility:{{ fgv.btnLabelVis }};">&#8203;</span>
+            <x-import component-from-global-scope="LuminDS.Button" type="submit" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="15" hint-size="15px,15px"></x-import>Add file</x-import>
+          </div>
+        </form>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; padding:12px 16px; border-radius:12px; background:var(--muted);">
+          <label style="display:flex; align-items:center; gap:10px; font-size:13px; font-weight:500;">
+            <x-import component-from-global-scope="LuminDS.Switch" checked="{{ fgv.skipOn }}" onCheckedChange="{{ toggleSkip }}" aria-label="Skip working pages" hint-size="32px,18px"></x-import>
+            Skip working pages when indexing
+          </label>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; opacity:{{ fgv.skipOpacity }};">
+            <sc-for list="{{ fgv.skipGroups }}" as="g" hint-placeholder-count="5">
+              <x-import component-from-global-scope="LuminDS.Toggle" variant="outline" size="sm" pressed="{{ g.on }}" disabled="{{ fgv.skipOff }}" onPressedChange="{{ g.toggle }}" hint-size="auto,28px">{{ g.name }}</x-import>
+            </sc-for>
+          </div>
+          <span style="flex-basis:100%; font-size:12px; color:var(--muted-foreground);">{{ fgv.skipNote }}</span>
+        </div>
+        <section style="display:flex; flex-direction:column; gap:12px; min-width:0;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+            <h2 style="margin:0; font-size:15px; font-weight:600;">Tracked files</h2>
+            <span style="font-size:12px; color:var(--muted-foreground); font-variant-numeric:tabular-nums;">{{ fgv.countLine }}</span>
+            <span style="flex:1;"></span>
+            <div style="width:220px; max-width:100%;"><x-import component-from-global-scope="LuminDS.Input" type="search" placeholder="Search files" aria-label="Search files" value="{{ fg.search }}" onChange="{{ setFgSearch }}" hint-size="100%,32px"></x-import></div>
+            <x-import component-from-global-scope="LuminDS.NativeSelect" aria-label="Filter by role" value="{{ fg.roleFilter }}" onChange="{{ setFgRoleFilter }}" hint-size="170px,32px">
+              <option value="">All roles</option>
+              <sc-for list="{{ fgv.roles }}" as="r" hint-placeholder-count="4"><option value="{{ r.id }}">{{ r.label }}</option></sc-for>
+            </x-import>
+          </div>
+          <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+            <sc-if value="{{ fgv.showHead }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid; grid-template-columns:{{ fgRowCols }}; gap:16px; padding:8px 16px; border-bottom:1px solid var(--border); background:var(--muted); font-size:12px; font-weight:500; color:var(--muted-foreground);">
+                <span>File</span><span>Pages</span><span>Index</span><span>Component usage</span><span style="text-align:right;">Actions</span>
+              </div>
+            </sc-if>
+            <sc-for list="{{ fgv.rows }}" as="r" hint-placeholder-count="0">
+              <div style="display:grid; grid-template-columns:{{ fgRowCols }}; gap:10px 16px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border);">
+                <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+                  <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                    <button type="button" onClick="{{ r.open }}" title="Open file details" style="min-width:0; padding:0; border:0; background:transparent; font:inherit; font-size:14px; font-weight:600; color:var(--foreground); text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer;" style-hover="text-decoration:underline;">{{ r.name }}</button>
+                    <a href="{{ r.url }}" target="_blank" rel="noreferrer" aria-label="Open {{ r.name }} in Figma" style="flex:none; display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--muted-foreground); text-decoration:none;" style-hover="color:var(--foreground);">Open in Figma<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="12" hint-size="12px,12px"></x-import></a>
+                  </div>
+                  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; font-size:12px; color:var(--muted-foreground);">
+                    <dc-import name="Pill" label="{{ r.roleLabel }}" tone="{{ r.roleTone }}" hint-size="auto,20px"></dc-import>
+                    <span style="font-family:ui-monospace, 'SF Mono', Menlo, monospace;">{{ r.keyShort }}</span>
+                    <span>{{ r.updated }}</span>
+                    <sc-if value="{{ r.hasLinks }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ r.openDir }}" style="border:0; padding:0; background:transparent; font:inherit; color:var(--foreground); text-decoration:underline; cursor:pointer;">{{ r.linksText }}</button></sc-if>
+                  </div>
+                </div>
+                <span style="font-size:13px; font-variant-numeric:tabular-nums; color:{{ r.pagesColor }};">{{ r.pages }}</span>
+                <span style="font-size:13px; color:{{ r.indexColor }};">{{ r.indexText }}</span>
+                <span style="font-size:13px; color:{{ r.usageColor }};">{{ r.usageText }}</span>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:{{ fgActionsJustify }}; gap:6px;">
+                  <sc-if value="{{ r.notConfirm }}" hint-placeholder-val="{{ true }}">
+                    <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" disabled="{{ r.syncDisabled }}" title="{{ r.disabledTitle }}" onClick="{{ r.sync }}" hint-size="auto,28px">Sync Index</x-import>
+                    <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" disabled="{{ r.scanDisabled }}" title="{{ r.disabledTitle }}" onClick="{{ r.scan }}" hint-size="auto,28px">Scan usage</x-import>
+                    <x-import component-from-global-scope="LuminDS.NativeSelect" size="sm" aria-label="Role for {{ r.name }}" value="{{ r.role }}" onChange="{{ r.setRole }}" hint-size="150px,28px">
+                      <sc-for list="{{ fgv.roles }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+                    </x-import>
+                    <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Remove {{ r.name }} from directory" title="Remove from directory" onClick="{{ r.askRemove }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.TrashIcon" size="15" hint-size="15px,15px"></x-import></x-import>
+                  </sc-if>
+                  <sc-if value="{{ r.confirm }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:13px;">Remove from directory?</span>
+                    <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ r.cancelRemove }}" hint-size="auto,28px">Cancel</x-import>
+                    <x-import component-from-global-scope="LuminDS.Button" variant="destructive" size="sm" onClick="{{ r.remove }}" hint-size="auto,28px">Remove</x-import>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ fgv.noFiles }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:36px 16px; text-align:center;">
+                <strong style="font-weight:600;">No tracked files yet</strong>
+                <span style="font-size:13px; color:var(--muted-foreground); max-width:52ch; text-wrap:pretty;">Paste a Figma file link above. Files from the LEX folder can’t be listed automatically until Figma is connected, so add them one link at a time.</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ fgv.filteredEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:24px 16px; font-size:13px; color:var(--muted-foreground); text-align:center;">No files match.</p>
+            </sc-if>
+          </div>
+          <sc-if value="{{ fgv.hasUnavailable }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:0; font-size:12px; color:var(--muted-foreground);">{{ fgv.unavailable }}</p>
+          </sc-if>
+        </section>
+        </sc-if>
+        <sc-if value="{{ fgd.isOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button type="button" onClick="{{ fgd.back }}" style="align-self:flex-start; display:inline-flex; align-items:center; gap:6px; padding:0; border:0; background:transparent; font:inherit; font-size:13px; color:var(--muted-foreground); cursor:pointer;" style-hover="color:var(--foreground);"><x-import component-from-global-scope="LuminDS.ArrowLeftIcon" size="14" hint-size="14px,14px"></x-import>All Figma files</button>
+            <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px;">
+              <div style="display:flex; flex-direction:column; gap:6px; min-width:0;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><dc-import name="Pill" label="{{ fgd.roleLabel }}" tone="{{ fgd.roleTone }}" hint-size="auto,20px"></dc-import><span style="font-size:13px; color:var(--muted-foreground);">{{ fgd.subLine }}</span></div>
+                <h1 style="margin:0; font-size:28px; line-height:1.2; font-weight:600; letter-spacing:-0.02em;">{{ fgd.name }}</h1>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                <a href="{{ fgd.url }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open in Figma<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" disabled="{{ fgd.syncDisabled }}" title="{{ fgd.disabledTitle }}" onClick="{{ fgd.sync }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.ArrowsClockwiseIcon" size="15" hint-size="15px,15px"></x-import>Sync Index</x-import>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" disabled="{{ fgd.scanDisabled }}" title="{{ fgd.disabledTitle }}" onClick="{{ fgd.scan }}" hint-size="auto,32px">Scan usage</x-import>
+              </div>
+            </div>
+            <sc-if value="{{ fgd.showUnavailable }}" hint-placeholder-val="{{ true }}"><p style="margin:0; font-size:12px; color:var(--muted-foreground);">{{ fgd.unavailable }}</p></sc-if>
+          </div>
+          <div style="display:grid; grid-template-columns:{{ dirCols }}; gap:24px; align-items:start;">
+            <dc-import name="FileIndex" title="Index" sync-text="{{ fgd.indexSync }}" groups="{{ fgd.groups }}" empty-title="{{ fgd.indexEmptyTitle }}" empty-text="{{ fgd.indexEmptyText }}" show-sync="{{ false }}" hint-size="100%,200px"></dc-import>
+            <section style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+              <sc-if value="{{ fgd.hasPage }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px;">
+                  <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+                    <span style="font-size:12px; color:var(--muted-foreground);">{{ fgd.pagePath }}</span>
+                    <h2 style="margin:0; font-size:18px; font-weight:600; letter-spacing:-0.01em;">{{ fgd.pageName }}</h2>
+                  </div>
+                  <a href="{{ fgd.pageUrl }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open page in Figma<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+                </div>
+                <dl style="display:grid; grid-template-columns:140px minmax(0,1fr); gap:10px 12px; margin:0; padding:14px 16px; border:1px solid var(--border); border-radius:12px; background:var(--card); font-size:13px;">
+                  <sc-for list="{{ fgd.pageKv }}" as="kv" hint-placeholder-count="4"><dt style="color:var(--muted-foreground);">{{ kv.k }}</dt><dd style="margin:0; color:{{ kv.color }};">{{ kv.v }}</dd></sc-for>
+                </dl>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                  <span style="font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);">Linked Linear cards</span>
+                  <sc-if value="{{ fgd.canLinkHere }}" hint-placeholder-val="{{ true }}"><x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ fgd.linkHere }}" hint-size="auto,28px"><x-import component-from-global-scope="LuminDS.LinkSimpleIcon" size="14" hint-size="14px,14px"></x-import>Link a card</x-import></sc-if>
+                </div>
+                <div style="display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; background:var(--card); overflow:hidden;">
+                  <sc-for list="{{ fgd.pageCards }}" as="c" hint-placeholder-count="0">
+                    <button type="button" onClick="{{ c.open }}" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:0; border-bottom:1px solid var(--border); background:transparent; color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+                      <span style="flex:none; width:56px; font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px; color:var(--muted-foreground);">{{ c.id }}</span>
+                      <span style="flex:1; min-width:0; font-weight:500; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{{ c.title }}</span>
+                      <dc-import name="Pill" label="{{ c.status }}" tone="{{ c.tone }}" hint-size="auto,20px"></dc-import>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ fgd.noPageCards }}" hint-placeholder-val="{{ false }}"><p style="margin:0; padding:18px 14px; font-size:13px; color:var(--muted-foreground);">{{ fgd.noCardsText }}</p></sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{ fgd.noPage }}" hint-placeholder-val="{{ true }}">
+                <h2 style="margin:0; font-size:15px; font-weight:600;">File details</h2>
+                <dl style="display:grid; grid-template-columns:140px minmax(0,1fr); gap:10px 12px; margin:0; padding:14px 16px; border:1px solid var(--border); border-radius:12px; background:var(--card); font-size:13px;">
+                  <sc-for list="{{ fgd.fileKv }}" as="kv" hint-placeholder-count="6"><dt style="color:var(--muted-foreground);">{{ kv.k }}</dt><dd style="margin:0; color:{{ kv.color }}; overflow-wrap:anywhere;">{{ kv.v }}</dd></sc-for>
+                </dl>
+                <p style="margin:0; font-size:13px; color:var(--muted-foreground); text-wrap:pretty;">{{ fgd.hint }}</p>
+              </sc-if>
+            </section>
+          </div>
+        </sc-if>
+      </sc-if>
+    </div>
+  </main>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="Main" style="flex:none; display:grid; grid-template-columns:repeat(5, 1fr); height:64px; border-top:1px solid var(--border); background:var(--background);">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="3">
+        <button type="button" onClick="{{ n.go }}" aria-current="{{ n.current }}" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; border:0; background:transparent; color:{{ n.tabColor }}; font:inherit; font-size:11px; font-weight:{{ n.weight }}; cursor:pointer;">
+          <x-import component-from-global-scope="{{ n.icon }}" size="20" weight="{{ n.iconWeight }}" hint-size="20px,20px"></x-import>{{ n.label }}
+        </button>
+      </sc-for>
+    </nav>
+  </sc-if>
+
+  <!-- ═════════ DIRECTORY CARD DRAWER ═════════ -->
+  <sc-if value="{{ showDirCard }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:40; display:flex; justify-content:flex-end;">
+      <button type="button" aria-label="Close" onClick="{{ closeDetail }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="{{ dc.id }} {{ dc.title }}" style="position:relative; display:flex; flex-direction:column; width:{{ drawerW }}; height:100%; background:var(--background); border-left:1px solid var(--border); box-shadow:0 16px 48px rgb(0 0 0 / 0.18);">
+        <div style="flex:none; display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border);">
+          <span style="font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:13px; color:var(--muted-foreground);">{{ dc.id }}</span>
+          <dc-import name="Pill" label="{{ dc.status }}" tone="{{ dc.tone }}" hint-size="auto,20px"></dc-import>
+          <sc-if value="{{ dc.linked }}" hint-placeholder-val="{{ false }}"><dc-import name="Pill" label="{{ dc.version }}" tone="in-review" hint-size="auto,20px"></dc-import></sc-if>
+          <span style="flex:1;"></span>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDetail }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:22px; padding:20px;">
+          <h2 style="margin:0; font-size:20px; line-height:1.3; font-weight:600; letter-spacing:-0.01em; text-wrap:pretty;">{{ dc.title }}</h2>
+          <dl style="display:grid; grid-template-columns:120px minmax(0,1fr); gap:10px 12px; margin:0; font-size:13px;">
+            <sc-for list="{{ dc.kv }}" as="kv" hint-placeholder-count="7"><dt style="color:var(--muted-foreground);">{{ kv.k }}</dt><dd style="margin:0; color:{{ kv.color }};">{{ kv.v }}</dd></sc-for>
+          </dl>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <a href="{{ dc.url }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none;" style-hover="background:var(--muted);">Open in Linear<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+            <sc-if value="{{ dc.linked }}" hint-placeholder-val="{{ false }}">
+              <a href="{{ dc.designUrl }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:14px; font-weight:500; text-decoration:none;" style-hover="background:var(--muted);">Open design<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+            </sc-if>
+            <sc-if value="{{ dc.notLinked }}" hint-placeholder-val="{{ true }}">
+              <x-import component-from-global-scope="LuminDS.Button" variant="outline" disabled="{{ true }}" title="Link this card to a design page first" hint-size="auto,32px">Open design</x-import>
+              <x-import component-from-global-scope="LuminDS.Button" onClick="{{ dc.link }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.LinkSimpleIcon" size="15" hint-size="15px,15px"></x-import>Link to a design page</x-import>
+            </sc-if>
+          </div>
+          <section style="display:flex; flex-direction:column; gap:10px;">
+            <h3 style="margin:0; font-size:14px; font-weight:600;">History</h3>
+            <sc-if value="{{ dc.linked }}" hint-placeholder-val="{{ false }}">
+              <ol style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:12px; border-left:2px solid var(--border); padding-left:14px;">
+                <sc-for list="{{ dc.history }}" as="h" hint-placeholder-count="2">
+                  <li style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:12px; color:var(--muted-foreground);">{{ h.date }}</span><span style="font-size:13px;">{{ h.text }}</span></li>
+                </sc-for>
+              </ol>
+              <form onSubmit="{{ dc.addChangelog }}" style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+                <div style="flex:1; min-width:180px;"><x-import component-from-global-scope="LuminDS.Input" placeholder="Changelog note or version (e.g. v1.1)" aria-label="Changelog note or version" value="{{ clNote }}" onChange="{{ setClNote }}" hint-size="100%,32px"></x-import></div>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" type="submit" hint-size="auto,28px">Add changelog</x-import>
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" type="button" onClick="{{ dc.tagVersion }}" hint-size="auto,28px">Tag version</x-import>
+              </form>
+              <div><x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ dc.unlink }}" hint-size="auto,28px"><span style="color:var(--destructive);">Unlink card from design</span></x-import></div>
+            </sc-if>
+            <sc-if value="{{ dc.notLinked }}" hint-placeholder-val="{{ true }}">
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground); text-wrap:pretty;">No history yet. Versions and changelog entries start when this card is linked to a design page.</p>
+            </sc-if>
+          </section>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ ISSUE DRAWER ═════════ -->
+  <sc-if value="{{ showIssue }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:40; display:flex; justify-content:flex-end;">
+      <button type="button" aria-label="Close" onClick="{{ closeDetail }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="{{ dI.label }}" style="position:relative; display:flex; flex-direction:column; width:{{ drawerW }}; height:100%; background:var(--background); border-left:1px solid var(--border); box-shadow:0 16px 48px rgb(0 0 0 / 0.18);">
+        <div style="flex:none; display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border);">
+          <span style="font-family:ui-monospace, 'SF Mono', Menlo, monospace; font-size:13px; color:var(--muted-foreground);">{{ dI.identifier }}</span>
+          <dc-import name="Pill" label="{{ linearBadge }}" tone="sample" hint-size="auto,20px"></dc-import>
+          <span style="flex:1;"></span>
+          <a href="{{ dI.url }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:13px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open in Linear<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDetail }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:22px; padding:20px;">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <h2 style="margin:0; font-size:20px; line-height:1.3; font-weight:600; letter-spacing:-0.01em;">{{ dI.title }}</h2>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px; font-size:13px;">
+              <dc-import name="Pill" label="{{ dI.stateName }}" tone="{{ dI.bucket }}" hint-size="auto,20px"></dc-import>
+              <span style="display:inline-flex; align-items:center; gap:4px; color:{{ dI.priorityColor }};"><x-import component-from-global-scope="{{ dI.priorityIcon }}" size="14" hint-size="14px,14px"></x-import>{{ dI.priorityLabel }}</span>
+              <span style="color:{{ dI.dueColor }}; font-weight:{{ dI.dueWeight }};">{{ dI.dueText }}</span>
+            </div>
+            <p style="margin:0; color:var(--muted-foreground); max-width:62ch; text-wrap:pretty;">{{ dI.description }}</p>
+          </div>
+          <dl style="display:grid; grid-template-columns:110px minmax(0,1fr); gap:10px 12px; margin:0; font-size:13px;">
+            <sc-for list="{{ dI.kv }}" as="kv" hint-placeholder-count="5">
+              <dt style="color:var(--muted-foreground);">{{ kv.k }}</dt><dd style="margin:0;">{{ kv.v }}</dd>
+            </sc-for>
+            <dt style="color:var(--muted-foreground);">Labels</dt>
+            <dd style="margin:0; display:flex; flex-wrap:wrap; gap:6px;"><sc-for list="{{ dI.labels }}" as="l" hint-placeholder-count="3"><span style="font-size:12px; padding:1px 6px; border-radius:6px; background:var(--muted); color:var(--muted-foreground);">{{ l }}</span></sc-for></dd>
+          </dl>
+          <section style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <h3 style="margin:0; font-size:14px; font-weight:600;">Design</h3>
+              <dc-import name="Pill" label="{{ figmaBadge }}" tone="sample" hint-size="auto,20px"></dc-import>
+            </div>
+            <sc-for list="{{ dI.designs }}" as="d" hint-placeholder-count="1">
+              <div style="display:flex; flex-direction:column; gap:10px; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--card);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <x-import component-from-global-scope="LuminDS.PenNibIcon" size="16" hint-size="16px,16px"></x-import>
+                  <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+                    <strong style="font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ d.name }}</strong>
+                    <span style="font-size:12px; color:var(--muted-foreground);">{{ d.meta }}</span>
+                  </div>
+                  <a href="{{ d.url }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:13px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+                </div>
+                <div aria-label="Frames" style="display:flex; flex-wrap:wrap; gap:6px;">
+                  <sc-for list="{{ d.frames }}" as="fr" hint-placeholder-count="2">
+                    <a href="{{ fr.url }}" target="_blank" rel="noreferrer" style="font-size:12px; padding:3px 8px; border:1px solid var(--border); border-radius:999px; color:var(--foreground); text-decoration:none;" style-hover="background:var(--muted);">{{ fr.name }}</a>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ dI.noDesign }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; flex-direction:column; gap:4px; padding:16px; border:1px dashed var(--border); border-radius:10px;">
+                <strong style="font-weight:600; font-size:13px;">No design attached</strong>
+                <span style="font-size:13px; color:var(--muted-foreground);">{{ dI.noDesignText }}</span>
+              </div>
+            </sc-if>
+          </section>
+          <section style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <h3 style="margin:0; font-size:14px; font-weight:600;">Related reading</h3>
+              <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ dI.saveRef }}" hint-size="auto,28px"><x-import component-from-global-scope="LuminDS.PlusIcon" size="14" hint-size="14px,14px"></x-import>Save a reference</x-import>
+            </div>
+            <sc-for list="{{ dI.reading }}" as="r" hint-placeholder-count="2">
+              <button type="button" onClick="{{ r.open }}" style="display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--background); color:var(--foreground); font:inherit; text-align:left; cursor:pointer;" style-hover="border-color:var(--ring);">
+                <span style="flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;">
+                  <span style="font-size:12px; color:var(--muted-foreground);">{{ r.meta }}</span>
+                  <span style="font-weight:500;">{{ r.title }}</span>
+                  <span style="font-size:12px; color:var(--card-indigo-foreground);">{{ r.because }}</span>
+                </span>
+                <dc-import name="Pill" label="{{ r.statusLabel }}" tone="{{ r.status }}" hint-size="auto,20px"></dc-import>
+              </button>
+            </sc-for>
+            <sc-if value="{{ dI.noReading }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground);">Nothing in Storybook matches this issue’s project or labels yet.</p>
+            </sc-if>
+          </section>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ ARTICLE DRAWER ═════════ -->
+  <sc-if value="{{ showArticle }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:40; display:flex; justify-content:flex-end;">
+      <button type="button" aria-label="Close" onClick="{{ closeDetail }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="{{ dA.title }}" style="position:relative; display:flex; flex-direction:column; width:{{ drawerW }}; height:100%; background:var(--background); border-left:1px solid var(--border); box-shadow:0 16px 48px rgb(0 0 0 / 0.18);">
+        <div style="flex:none; display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border);">
+          <span style="flex:1; font-size:13px; color:var(--muted-foreground);">{{ dA.headLine }}</span>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-pressed="{{ dA.favorite }}" aria-label="Toggle favorite" onClick="{{ dA.toggleFav }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.StarIcon" size="17" weight="{{ dA.starWeight }}" color="{{ dA.starColor }}" hint-size="17px,17px"></x-import></x-import>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDetail }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:22px; padding:20px;">
+          <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
+            <h2 style="margin:0; font-size:20px; line-height:1.3; font-weight:600; letter-spacing:-0.01em; text-wrap:pretty;">{{ dA.title }}</h2>
+            <span style="color:var(--muted-foreground);">{{ dA.byline }}</span>
+            <a href="{{ dA.url }}" target="_blank" rel="noreferrer" style="display:inline-flex; align-items:center; gap:6px; height:28px; padding:0 10px; border:1px solid var(--border); border-radius:8px; background:var(--background); color:var(--foreground); font-size:13px; font-weight:500; text-decoration:none; white-space:nowrap;" style-hover="background:var(--muted);">Open source<x-import component-from-global-scope="LuminDS.ArrowUpRightIcon" size="14" hint-size="14px,14px"></x-import></a>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:13px; font-weight:500;">Reading status</span>
+            <x-import component-from-global-scope="LuminDS.Tabs" value="{{ dA.status }}" onValueChange="{{ dA.setStatus }}" hint-size="auto,36px">
+              <x-import component-from-global-scope="LuminDS.TabsList" hint-size="auto,36px">
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="to-read" hint-size="auto,28px">To read</x-import>
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="reading" hint-size="auto,28px">Reading</x-import>
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="read" hint-size="auto,28px">Read</x-import>
+              </x-import>
+            </x-import>
+          </div>
+          <sc-if value="{{ dA.hasSummary }}" hint-placeholder-val="{{ true }}">
+            <section style="display:flex; flex-direction:column; gap:6px;">
+              <h3 style="margin:0; font-size:14px; font-weight:600;">Summary</h3>
+              <p style="margin:0; color:var(--muted-foreground); text-wrap:pretty;">{{ dA.summary }}</p>
+            </section>
+          </sc-if>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label for="article-notes" style="font-size:13px; font-weight:500;">My notes</label>
+            <x-import component-from-global-scope="LuminDS.Textarea" id="article-notes" rows="5" placeholder="What to remember, where it applies at Lumin…" value="{{ notesValue }}" onChange="{{ setNotes }}" onBlur="{{ saveNotes }}" hint-size="100%,110px"></x-import>
+          </div>
+          <dl style="display:grid; grid-template-columns:110px minmax(0,1fr); gap:10px 12px; margin:0; font-size:13px;">
+            <dt style="color:var(--muted-foreground);">Topic</dt><dd style="margin:0;">{{ dA.topicName }}</dd>
+            <dt style="color:var(--muted-foreground);">Tags</dt>
+            <dd style="margin:0; display:flex; flex-wrap:wrap; gap:6px;"><sc-for list="{{ dA.allTags }}" as="t" hint-placeholder-count="3"><span style="font-size:12px; padding:1px 6px; border-radius:6px; background:var(--muted); color:var(--muted-foreground);">{{ t }}</span></sc-for><sc-if value="{{ dA.noTags }}" hint-placeholder-val="{{ false }}"><span style="color:var(--muted-foreground);">None</span></sc-if></dd>
+            <dt style="color:var(--muted-foreground);">Collections</dt><dd style="margin:0;">{{ dA.collections }}</dd>
+            <dt style="color:var(--muted-foreground);">Lumin project</dt><dd style="margin:0;">{{ dA.projects }}</dd>
+          </dl>
+          <section style="display:flex; flex-direction:column; gap:8px;">
+            <h3 style="margin:0; font-size:14px; font-weight:600;">Relevant to current work</h3>
+            <div style="display:flex; flex-direction:column; margin:0 -8px;">
+              <sc-for list="{{ dA.relatedIssues }}" as="i" hint-placeholder-count="2">
+                <dc-import name="IssueRow" issue="{{ i }}" variant="status-only" on-open="{{ openIssue }}" hint-size="100%,44px"></dc-import>
+              </sc-for>
+            </div>
+            <sc-if value="{{ dA.noRelated }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground);">No open issues share this article’s project or tags.</p>
+            </sc-if>
+          </section>
+        </div>
+        <div style="flex:none; display:flex; align-items:center; gap:8px; padding:12px 16px; border-top:1px solid var(--border);">
+          <sc-if value="{{ confirmDelete }}" hint-placeholder-val="{{ false }}">
+            <span style="flex:1; font-size:13px;">Remove this article from Storybook?</span>
+            <x-import component-from-global-scope="LuminDS.Button" variant="ghost" onClick="{{ cancelDelete }}" hint-size="auto,32px">Cancel</x-import>
+            <x-import component-from-global-scope="LuminDS.Button" variant="destructive" onClick="{{ dA.remove }}" hint-size="auto,32px">Remove</x-import>
+          </sc-if>
+          <sc-if value="{{ notConfirmDelete }}" hint-placeholder-val="{{ true }}">
+            <x-import component-from-global-scope="LuminDS.Button" variant="ghost" onClick="{{ askDelete }}" style="margin-right:auto;" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.TrashIcon" size="15" color="var(--destructive)" hint-size="15px,15px"></x-import><span style="color:var(--destructive);">Remove</span></x-import>
+            <span style="flex:1;"></span>
+            <x-import component-from-global-scope="LuminDS.Button" variant="outline" onClick="{{ dA.edit }}" hint-size="auto,32px"><x-import component-from-global-scope="LuminDS.PencilSimpleIcon" size="15" hint-size="15px,15px"></x-import>Edit details</x-import>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ SAVE / EDIT ARTICLE DIALOG ═════════ -->
+  <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:{{ dialogPad }};">
+      <button type="button" aria-label="Close" onClick="{{ closeDialog }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="{{ fm.heading }}" style="position:relative; display:flex; flex-direction:column; width:640px; max-width:100%; max-height:100%; background:var(--background); border:1px solid var(--border); border-radius:14px; box-shadow:0 16px 48px rgb(0 0 0 / 0.2);">
+        <div style="flex:none; display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--border);">
+          <strong style="flex:1; font-size:16px; font-weight:600;">{{ fm.heading }}</strong>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDialog }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <form id="article-form" onSubmit="{{ submitForm }}" novalidate="{{ true }}" style="flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap:14px 16px; padding:18px;">
+          <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px;">
+            <label for="f-url" style="font-size:13px; font-weight:500;">Link</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="f-url" type="url" placeholder="https://" value="{{ form.url }}" aria-invalid="{{ fm.urlInvalid }}" onChange="{{ fm.set.url }}" onBlur="{{ fm.urlBlur }}" hint-size="100%,32px"></x-import>
+            <span style="font-size:12px; color:var(--destructive); min-height:0;">{{ fm.err.url }}</span>
+          </div>
+          <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px;">
+            <label for="f-title" style="font-size:13px; font-weight:500;">Title</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="f-title" value="{{ form.title }}" aria-invalid="{{ fm.titleInvalid }}" onChange="{{ fm.set.title }}" hint-size="100%,32px"></x-import>
+            <span style="font-size:12px; color:var(--destructive);">{{ fm.err.title }}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label for="f-author" style="font-size:13px; font-weight:500;">Author</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="f-author" value="{{ form.author }}" onChange="{{ fm.set.author }}" hint-size="100%,32px"></x-import>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label for="f-pub" style="font-size:13px; font-weight:500;">Publication or site</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="f-pub" value="{{ form.publication }}" onChange="{{ fm.set.publication }}" hint-size="100%,32px"></x-import>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label for="f-topic" style="font-size:13px; font-weight:500;">Topic</label>
+            <div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" id="f-topic" value="{{ form.topic }}" aria-invalid="{{ fm.topicInvalid }}" onChange="{{ fm.set.topic }}" hint-size="100%,32px">
+              <option value="">Choose a topic</option>
+              <sc-for list="{{ topicOptions }}" as="t" hint-placeholder-count="7"><option value="{{ t.id }}">{{ t.name }}</option></sc-for>
+            </x-import></div>
+            <span style="font-size:12px; color:var(--destructive);">{{ fm.err.topic }}</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:13px; font-weight:500;">Reading status</span>
+            <x-import component-from-global-scope="LuminDS.Tabs" value="{{ form.status }}" onValueChange="{{ fm.setStatus }}" hint-size="auto,36px">
+              <x-import component-from-global-scope="LuminDS.TabsList" hint-size="auto,36px">
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="to-read" hint-size="auto,28px">To read</x-import>
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="reading" hint-size="auto,28px">Reading</x-import>
+                <x-import component-from-global-scope="LuminDS.TabsTrigger" value="read" hint-size="auto,28px">Read</x-import>
+              </x-import>
+            </x-import>
+          </div>
+          <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px;">
+            <label for="f-summary" style="font-size:13px; font-weight:500;">Short summary</label>
+            <x-import component-from-global-scope="LuminDS.Textarea" id="f-summary" rows="2" placeholder="One or two sentences on what it argues" value="{{ form.summary }}" onChange="{{ fm.set.summary }}" hint-size="100%,64px"></x-import>
+          </div>
+          <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px;">
+            <label for="f-notes" style="font-size:13px; font-weight:500;">My notes</label>
+            <x-import component-from-global-scope="LuminDS.Textarea" id="f-notes" rows="3" placeholder="Why you saved it, where it applies" value="{{ form.notes }}" onChange="{{ fm.set.notes }}" hint-size="100%,80px"></x-import>
+          </div>
+          <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:6px;">
+            <label for="f-tags" style="font-size:13px; font-weight:500;">Tags</label>
+            <x-import component-from-global-scope="LuminDS.Input" id="f-tags" placeholder="ai, onboarding, accessibility" value="{{ form.tags }}" onChange="{{ fm.set.tags }}" hint-size="100%,32px"></x-import>
+            <span style="font-size:12px; color:var(--muted-foreground);">Separate with commas. Tags that match Linear labels surface this article beside those issues.</span>
+          </div>
+          <fieldset style="grid-column:1 / -1; display:flex; flex-direction:column; gap:8px; border:0; padding:0; margin:0;">
+            <legend style="font-size:13px; font-weight:500; margin-bottom:8px;">Related Lumin project</legend>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <sc-for list="{{ fm.projectChips }}" as="c" hint-placeholder-count="4">
+                <x-import component-from-global-scope="LuminDS.Toggle" variant="outline" size="sm" pressed="{{ c.on }}" onPressedChange="{{ c.toggle }}" hint-size="auto,28px">{{ c.name }}</x-import>
+              </sc-for>
+            </div>
+          </fieldset>
+          <fieldset style="grid-column:1 / -1; display:flex; flex-direction:column; gap:8px; border:0; padding:0; margin:0;">
+            <legend style="font-size:13px; font-weight:500; margin-bottom:8px;">Collections</legend>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <sc-for list="{{ fm.collectionChips }}" as="c" hint-placeholder-count="3">
+                <x-import component-from-global-scope="LuminDS.Toggle" variant="outline" size="sm" pressed="{{ c.on }}" onPressedChange="{{ c.toggle }}" hint-size="auto,28px">{{ c.name }}</x-import>
+              </sc-for>
+            </div>
+          </fieldset>
+          <label style="grid-column:1 / -1; display:flex; align-items:center; gap:8px; font-size:14px;">
+            <x-import component-from-global-scope="LuminDS.Checkbox" id="f-fav" checked="{{ form.favorite }}" onCheckedChange="{{ fm.setFav }}" hint-size="16px,16px"></x-import>
+            Add to favorites
+          </label>
+        </form>
+        <div style="flex:none; display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--border);">
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" onClick="{{ closeDialog }}" hint-size="auto,32px">Cancel</x-import>
+          <x-import component-from-global-scope="LuminDS.Button" type="submit" form="article-form" hint-size="auto,32px">{{ fm.submitLabel }}</x-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ INTEGRATIONS DIALOG ═════════ -->
+  <sc-if value="{{ showIntegrations }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:{{ dialogPad }};">
+      <button type="button" aria-label="Close" onClick="{{ closeDialog }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="Integrations" style="position:relative; display:flex; flex-direction:column; width:600px; max-width:100%; max-height:100%; background:var(--background); border:1px solid var(--border); border-radius:14px; box-shadow:0 16px 48px rgb(0 0 0 / 0.2);">
+        <div style="flex:none; display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--border);">
+          <strong style="flex:1; font-size:16px; font-weight:600;">Integrations</strong>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDialog }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:18px;">
+          <sc-for list="{{ integrationRows }}" as="s" hint-placeholder-count="2">
+            <div style="display:flex; flex-direction:column; gap:12px; padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span aria-hidden="true" style="width:8px; height:8px; border-radius:999px; background:{{ s.dot }};"></span>
+                <h2 style="margin:0; font-size:15px; font-weight:600;">{{ s.name }}</h2>
+                <span style="font-size:12px; color:var(--muted-foreground);">{{ s.label }}</span>
+              </div>
+              <p style="margin:0; font-size:13px; color:var(--muted-foreground);">{{ s.intro }}</p>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <h3 style="margin:0; font-size:13px; font-weight:600;">Will surface</h3>
+                <ul style="margin:0; padding-left:18px; display:grid; gap:4px; font-size:13px; color:var(--muted-foreground);">
+                  <sc-for list="{{ s.surfaces }}" as="x" hint-placeholder-count="4"><li>{{ x }}</li></sc-for>
+                </ul>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <h3 style="margin:0; font-size:13px; font-weight:600;">To connect</h3>
+                <p style="margin:0; font-size:13px; color:var(--muted-foreground);">{{ s.howTo }}</p>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex; flex-direction:column; gap:12px; padding:16px; border:1px solid var(--border); border-radius:12px; background:var(--card);">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span aria-hidden="true" style="width:8px; height:8px; border-radius:999px; background:var(--card-green-foreground);"></span>
+              <h2 style="margin:0; font-size:15px; font-weight:600;">Storybook library</h2>
+              <span style="font-size:12px; color:var(--muted-foreground);">Saved in this browser</span>
+            </div>
+            <p style="margin:0; font-size:13px; color:var(--muted-foreground);">{{ libraryNote }}</p>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+              <sc-if value="{{ confirmReset }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:13px;">Replace your library with the starter set?</span>
+                <x-import component-from-global-scope="LuminDS.Button" variant="destructive" size="sm" onClick="{{ resetLibrary }}" hint-size="auto,28px">Reset library</x-import>
+                <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="sm" onClick="{{ cancelReset }}" hint-size="auto,28px">Cancel</x-import>
+              </sc-if>
+              <sc-if value="{{ notConfirmReset }}" hint-placeholder-val="{{ true }}">
+                <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ askReset }}" hint-size="auto,28px">Reset to starter library…</x-import>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ LINK A CARD DIALOG ═════════ -->
+  <sc-if value="{{ showLinkDialog }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:{{ dialogPad }};">
+      <button type="button" aria-label="Close" onClick="{{ closeDialog }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="Link a card" style="position:relative; display:flex; flex-direction:column; width:520px; max-width:100%; max-height:100%; background:var(--background); border:1px solid var(--border); border-radius:14px; box-shadow:0 16px 48px rgb(0 0 0 / 0.2);">
+        <div style="flex:none; display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--border);">
+          <strong style="flex:1; font-size:16px; font-weight:600;">Link a card to a design</strong>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDialog }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <form id="link-form" onSubmit="{{ submitLink }}" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:18px;">
+          <div style="display:flex; flex-direction:column; gap:6px;"><label for="lk-issue" style="font-size:13px; font-weight:500;">Linear card</label><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" id="lk-issue" style="width:100%;" class-name="w-full" value="{{ lk.issueId }}" onChange="{{ setLkIssue }}" hint-size="100%,32px"><option value="">Choose a card</option><sc-for list="{{ lkv.issueOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></x-import></div></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><label for="lk-file" style="font-size:13px; font-weight:500;">Figma file</label><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" id="lk-file" style="width:100%;" class-name="w-full" value="{{ lkv.fileKey }}" onChange="{{ setLkFile }}" disabled="{{ lkv.noFiles }}" hint-size="100%,32px"><sc-if value="{{ lkv.noFiles }}" hint-placeholder-val="{{ false }}"><option value="">No tracked files</option></sc-if><sc-for list="{{ lkv.fileOptions }}" as="o" hint-placeholder-count="2"><option value="{{ o.key }}">{{ o.name }}</option></sc-for></x-import></div></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><label for="lk-page" style="font-size:13px; font-weight:500;">Design page</label><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" id="lk-page" style="width:100%;" class-name="w-full" value="{{ lk.pageId }}" onChange="{{ setLkPage }}" disabled="{{ lkv.noPages }}" hint-size="100%,32px"><option value="">{{ lkv.pagePlaceholder }}</option><sc-for list="{{ lkv.pageOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o.id }}">{{ o.name }}</option></sc-for></x-import></div></div>
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) 120px; gap:12px;">
+            <div style="display:flex; flex-direction:column; gap:6px;"><label for="lk-frame" style="font-size:13px; font-weight:500;">Section or frame <span style="font-weight:400; color:var(--muted-foreground);">(optional)</span></label><x-import component-from-global-scope="LuminDS.Input" id="lk-frame" value="{{ lk.frame }}" onChange="{{ setLkFrame }}" disabled="{{ lkv.noPages }}" hint-size="100%,32px"></x-import></div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><label for="lk-version" style="font-size:13px; font-weight:500;">Version</label><x-import component-from-global-scope="LuminDS.Input" id="lk-version" value="{{ lk.version }}" onChange="{{ setLkVersion }}" hint-size="100%,32px"></x-import></div>
+          </div>
+          <sc-if value="{{ lkv.hasMissing }}" hint-placeholder-val="{{ true }}">
+            <div role="note" style="display:flex; gap:8px; padding:10px 12px; border-radius:10px; background:var(--muted); font-size:13px; color:var(--foreground);"><x-import component-from-global-scope="LuminDS.InfoIcon" size="16" hint-size="16px,16px"></x-import><span style="text-wrap:pretty;">{{ lkv.missing }}</span></div>
+          </sc-if>
+        </form>
+        <div style="flex:none; display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--border);">
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" onClick="{{ closeDialog }}" hint-size="auto,32px">Cancel</x-import>
+          <x-import component-from-global-scope="LuminDS.Button" type="submit" form="link-form" disabled="{{ lkv.linkDisabled }}" hint-size="auto,32px">Link card</x-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ ADD SOURCE DIALOG ═════════ -->
+  <sc-if value="{{ showSourceForm }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:{{ dialogPad }};">
+      <button type="button" aria-label="Close" onClick="{{ closeDialog }}" style="position:absolute; inset:0; border:0; background:rgb(10 10 10 / 0.32); cursor:default;"></button>
+      <div role="dialog" aria-label="Add a source" style="position:relative; display:flex; flex-direction:column; width:480px; max-width:100%; max-height:100%; background:var(--background); border:1px solid var(--border); border-radius:14px; box-shadow:0 16px 48px rgb(0 0 0 / 0.2);">
+        <div style="flex:none; display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--border);">
+          <strong style="flex:1; font-size:16px; font-weight:600;">Add a source</strong>
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" size="icon-sm" aria-label="Close" onClick="{{ closeDialog }}" hint-size="28px,28px"><x-import component-from-global-scope="LuminDS.XIcon" size="16" hint-size="16px,16px"></x-import></x-import>
+        </div>
+        <form id="source-form" onSubmit="{{ submitSource }}" novalidate="{{ true }}" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding:18px;">
+          <div style="display:flex; flex-direction:column; gap:6px;"><label style="font-size:13px; font-weight:500;">Website or feed URL</label><x-import component-from-global-scope="LuminDS.Input" type="url" placeholder="https://www.figma.com/release-notes/feed/atom.xml" value="{{ srcForm.url }}" aria-invalid="{{ srcFm.urlInvalid }}" onChange="{{ srcFm.setUrl }}" onBlur="{{ srcFm.urlBlur }}" hint-size="100%,32px"></x-import><span style="font-size:12px; color:var(--destructive);">{{ srcFm.err.url }}</span></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><label style="font-size:13px; font-weight:500;">Name</label><x-import component-from-global-scope="LuminDS.Input" placeholder="Figma Release Notes" value="{{ srcForm.name }}" aria-invalid="{{ srcFm.nameInvalid }}" onChange="{{ srcFm.setName }}" hint-size="100%,32px"></x-import><span style="font-size:12px; color:var(--destructive);">{{ srcFm.err.name }}</span></div>
+          <div style="display:flex; flex-direction:column; gap:6px;"><label style="font-size:13px; font-weight:500;">Category</label><div style="width:100%; min-width:0;"><x-import component-from-global-scope="LuminDS.NativeSelect" value="{{ srcForm.category }}" onChange="{{ srcFm.setCategory }}" hint-size="100%,32px"><sc-for list="{{ srcFm.categories }}" as="cat" hint-placeholder-count="6"><option value="{{ cat }}">{{ cat }}</option></sc-for></x-import></div></div>
+          <label style="display:flex; align-items:center; gap:8px; font-size:14px;"><x-import component-from-global-scope="LuminDS.Switch" checked="{{ srcForm.enabled }}" onCheckedChange="{{ srcFm.setEnabled }}" hint-size="32px,18px"></x-import>Follow this source</label>
+          <span style="font-size:12px; color:var(--muted-foreground);">Articles you save from this site are grouped under the source automatically.</span>
+        </form>
+        <div style="flex:none; display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--border);">
+          <x-import component-from-global-scope="LuminDS.Button" variant="ghost" onClick="{{ closeDialog }}" hint-size="auto,32px">Cancel</x-import>
+          <x-import component-from-global-scope="LuminDS.Button" type="submit" form="source-form" hint-size="auto,32px">Add source</x-import>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ═════════ TOAST ═════════ -->
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position:absolute; left:50%; bottom:{{ toastBottom }}; transform:translateX(-50%); z-index:60; display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; background:var(--primary); color:var(--primary-foreground); font-size:13px; box-shadow:0 12px 40px rgb(0 0 0 / 0.2); white-space:nowrap;">
+      <span>{{ toast.msg }}</span>
+      <sc-if value="{{ toast.hasAction }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ toast.run }}" style="border:0; background:transparent; font:inherit; font-weight:600; color:inherit; text-decoration:underline; cursor:pointer;">{{ toast.actionLabel }}</button>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;initialView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;overview&quot;,&quot;work&quot;,&quot;directory&quot;,&quot;figma&quot;,&quot;storybook&quot;],&quot;default&quot;:&quot;overview&quot;,&quot;tsType&quot;:&quot;'overview' | 'work' | 'storybook'&quot;,&quot;section&quot;:&quot;State&quot;},&quot;initialIssue&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;DES-214&quot;,&quot;DES-221&quot;,&quot;DES-230&quot;,&quot;DES-205&quot;,&quot;DES-187&quot;,&quot;DES-238&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;State&quot;},&quot;initialArticle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;a-human-ai&quot;,&quot;a-tokens&quot;,&quot;a-heuristics&quot;,&quot;a-pair&quot;,&quot;a-lawsofux&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;State&quot;},&quot;initialDialog&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;save&quot;,&quot;integrations&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;State&quot;},&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;auto&quot;,&quot;desktop&quot;,&quot;mobile&quot;],&quot;default&quot;:&quot;auto&quot;,&quot;tsType&quot;:&quot;'auto' | 'desktop' | 'mobile'&quot;,&quot;section&quot;:&quot;Display&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;system&quot;,&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;system&quot;,&quot;tsType&quot;:&quot;'system' | 'light' | 'dark'&quot;,&quot;section&quot;:&quot;Display&quot;},&quot;figmaSource&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sample&quot;,&quot;disconnected&quot;],&quot;default&quot;:&quot;sample&quot;,&quot;tsType&quot;:&quot;'sample' | 'disconnected'&quot;,&quot;section&quot;:&quot;Integrations&quot;},&quot;height&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;initialPrefill&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}">
+const W_VIEWS = [['assigned', 'Assigned to me'], ['progress', 'In progress'], ['next', 'Up next'], ['updated', 'Recently updated']];
+const SB_VIEWS = [['all', 'All'], ['to-read', 'To read'], ['reading', 'Reading'], ['favorites', 'Favorites'], ['sources', 'Sources']];
+const EMPTY_SOURCE = { name: '', url: '', category: 'Blog', enabled: true };
+const DETAILS = {
+  linear: { surfaces: ['Issues assigned to you', 'Projects and the active cycle', 'Status, priority and due dates', 'Figma attachments on issues'], howTo: 'Add a server route that calls Linear’s GraphQL API with your API key, implement LinearSource (src/data/linear/source.ts) against it, and register it in src/data/index.ts.' },
+  figma: { surfaces: ['Recently edited files', 'Top-level frames for deep links', 'Files matched to Linear issues', 'Which issues have no design yet'], howTo: 'Add a server route that calls the Figma REST API with a personal access token or OAuth, implement FigmaSource (src/data/figma/source.ts), and register it in src/data/index.ts.' },
+};
+const EMPTY_FORM = { id: null, url: '', title: '', author: '', publication: '', topic: '', status: 'to-read', summary: '', notes: '', tags: '', projects: [], collections: [], favorite: false };
+const hostLabel = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+const isUrl = (v) => /^https?:\/\/[^\s.]+\.[^\s]+$/i.test(v.trim());
+const parseTags = (v) => Array.from(new Set(v.split(/[,\n]/).map((t) => t.trim().replace(/^#/, '').toLowerCase().replace(/\s+/g, '-')).filter(Boolean)));
+const toggleIn = (list, id) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
+const TONE_COLOR = { critical: 'var(--destructive)', warning: 'var(--custom-amber-900-dark-amber-50)', info: 'var(--card-sky-foreground)' };
+const STRIPE = { critical: 'var(--destructive)', warning: 'var(--card-amber-foreground)', info: 'var(--card-sky-foreground)' };
+const DOT = { sample: 'var(--card-amber-foreground)', connected: 'var(--card-green-foreground)', disconnected: 'var(--muted-foreground)', error: 'var(--destructive)' };
+const val = (e) => (e && e.target ? e.target.value : e);
+
+class Component extends DCLogic {
+  state = {
+    view: null, issue: undefined, article: undefined, dialog: undefined,
+    form: { ...EMPTY_FORM }, touched: false, toast: null, lib: null, themePref: null, sysDark: false, width: 1200,
+    w: { view: 'assigned', project: '', search: '', design: 'any', sort: 'urgency' },
+    sb: { view: 'all', topic: null, collection: null, search: '', status: '', project: '', source: '', saved: '', sort: 'newest', layout: 'grid', newCol: '', railOpen: true, filterOpen: false },
+    srcForm: { ...EMPTY_SOURCE }, srcTouched: false, confirmSource: null,
+    notes: null, confirmDelete: false, confirmReset: false,
+    fg: { url: '', name: '', role: 'product', touched: false, search: '', roleFilter: '', nameAuto: false }, confirmFile: null, fstore: null,
+    dir: { fileKey: '', search: '', pageId: null }, dirCard: null, clNote: '', fgOpen: null, fgPage: null, idxCollapsed: {},
+    lk: { issueId: '', fileKey: '', pageId: '', frame: '', version: 'v1.0' },
+  };
+  rootRef = React.createRef(); mainRef = React.createRef(); figmaRef = React.createRef(); attnRef = React.createRef();
+
+  componentDidMount() {
+    const el = this.rootRef.current;
+    if (el && window.ResizeObserver) { this.ro = new ResizeObserver(([e]) => this.setState({ width: e.contentRect.width })); this.ro.observe(el); }
+    try { this.mq = window.matchMedia('(prefers-color-scheme: dark)'); this.setState({ sysDark: this.mq.matches }); this.mqh = (e) => this.setState({ sysDark: e.matches }); this.mq.addEventListener('change', this.mqh); } catch (e) {}
+    try { const t = localStorage.getItem('pdd.claude-design.theme'); if (t && !this.props.theme) this.setState({ themePref: t }); } catch (e) {}
+    try { const l = localStorage.getItem('pdd.claude-design.sbLayout'); if (l) this.setState((s) => ({ sb: { ...s.sb, layout: l } })); } catch (e) {}
+    try { const r = localStorage.getItem('pdd.claude-design.sbRail'); if (r) this.setState((s) => ({ sb: { ...s.sb, railOpen: r === 'open' } })); } catch (e) {}
+    this.onKey = (e) => { if (e.key === 'Escape') { if (this.dialog()) this.closeDialog(); else this.closeDetail(); } };
+    window.addEventListener('keydown', this.onKey);
+    if (!window.PDD) this.poll = setInterval(() => { if (window.PDD) { clearInterval(this.poll); this.forceUpdate(); } }, 40);
+    if (this.dialog() === 'save' && this.props.initialPrefill) this.setState({ form: { ...EMPTY_FORM, ...this.props.initialPrefill } });
+  }
+  componentWillUnmount() { this.ro && this.ro.disconnect(); this.mq && this.mq.removeEventListener('change', this.mqh); window.removeEventListener('keydown', this.onKey); clearInterval(this.poll); clearTimeout(this.toastT); }
+
+  // routed state falls back to props so Screens/Tweaks can pin a state
+  viewName() { return this.state.view ?? this.props.initialView ?? 'overview'; }
+  issueId() { return this.state.issue !== undefined ? this.state.issue : (this.props.initialIssue || null); }
+  articleId() { return this.state.article !== undefined ? this.state.article : (this.props.initialArticle || null); }
+  dialog() { return this.state.dialog !== undefined ? this.state.dialog : (this.props.initialDialog && this.props.initialDialog !== 'none' ? this.props.initialDialog : null); }
+  lib() { if (this.state.lib) return this.state.lib; if (!this._lib) this._lib = window.PDD.loadLibrary(); return this._lib; }
+  setLib(lib) { this._lib = lib; window.PDD.saveLibrary(lib); this.setState({ lib }); }
+  scrollMain(el) { const m = this.mainRef.current; if (!m) return; m.scrollTo({ top: el ? Math.max(0, el.offsetTop - 16) : 0, behavior: el ? 'smooth' : 'auto' }); }
+
+  go(view, patch = {}, after) {
+    this.setState({ view, ...patch }, () => { if (after) setTimeout(after, 60); else this.scrollMain(null); });
+  }
+  showToast(msg, action) {
+    clearTimeout(this.toastT);
+    this.setState({ toast: { msg, actionLabel: action ? action.label : '', hasAction: !!action, run: action ? () => { action.run(); this.setState({ toast: null }); } : null } });
+    this.toastT = setTimeout(() => this.setState({ toast: null }), 4500);
+  }
+  updateArticle(id, patch) { const l = this.lib(); this.setLib({ ...l, articles: l.articles.map((a) => (a.id === id ? { ...a, ...patch } : a)) }); }
+  addArticle(data) { const l = this.lib(); const a = { savedAt: new Date().toISOString(), ...data, id: data.id || `a-${Date.now().toString(36)}` }; this.setLib({ ...l, articles: [a, ...l.articles] }); return a; }
+  updateSource(id, patch) { const l = this.lib(); this.setLib({ ...l, sources: (l.sources || []).map((x) => (x.id === id ? { ...x, ...patch } : x)) }); }
+  removeSource(id) { const l = this.lib(); this.setLib({ ...l, sources: (l.sources || []).filter((x) => x.id !== id) }); }
+  removeArticle(id) { const l = this.lib(); this.setLib({ ...l, articles: l.articles.filter((a) => a.id !== id) }); }
+
+  openIssue = (identifier) => { this.saveNotes(); this.setState({ issue: identifier, article: null, confirmDelete: false }); };
+  openArticle = (id) => { this.saveNotes(); const a = this.lib().articles.find((x) => x.id === id); this.setState({ article: id, issue: null, notes: a ? a.notes : '', confirmDelete: false }); };
+  closeDetail = () => { this.saveNotes(); this.setState({ issue: null, article: null, confirmDelete: false, notes: null, dirCard: null, clNote: '' }); };
+  saveNotes = () => {
+    const id = this.articleId(); if (!id || this.state.notes === null) return;
+    const a = this.lib().articles.find((x) => x.id === id);
+    if (a && this.state.notes !== a.notes) { this.updateArticle(id, { notes: this.state.notes }); this.showToast('Notes saved'); }
+  };
+  openSave = (prefill = {}) => { this.setState({ dialog: 'save', form: { ...EMPTY_FORM, ...prefill }, touched: false }); };
+  closeDialog = () => this.setState({ dialog: null, confirmReset: false });
+  toggleFav = (id) => { const a = this.lib().articles.find((x) => x.id === id); if (a) this.updateArticle(id, { favorite: !a.favorite }); };
+
+  submitForm = (e) => {
+    e && e.preventDefault && e.preventDefault();
+    const f = this.state.form; const errs = this.formErrors(f);
+    this.setState({ touched: true });
+    if (errs.url || errs.title || errs.topic) return;
+    const data = {
+      url: f.url.trim(), title: f.title.trim(), author: f.author.trim() || f.publication.trim() || hostLabel(f.url), publication: f.publication.trim() || hostLabel(f.url),
+      topic: f.topic, status: f.status, summary: f.summary.trim(), notes: f.notes.trim(), tags: parseTags(f.tags), relatedProjectIds: f.projects, collectionIds: f.collections, favorite: f.favorite,
+    };
+    if (f.id) { this.updateArticle(f.id, data); this.showToast('Article updated'); this.setState({ dialog: null, article: f.id, issue: null, notes: data.notes }); }
+    else { const created = this.addArticle(data); this.setState({ dialog: null }); this.showToast('Saved to Storybook', { label: 'View', run: () => this.openArticle(created.id) }); }
+  };
+  formErrors(f) {
+    return { url: !f.url.trim() ? 'Add the article’s link.' : !isUrl(f.url) ? 'Use a full link starting with https://' : '', title: !f.title.trim() ? 'Add a title.' : '', topic: !f.topic ? 'Choose a topic.' : '' };
+  }
+  setForm(k, v) { this.setState((s) => ({ form: { ...s.form, [k]: v } })); }
+  setW(patch) { this.setState((s) => ({ w: { ...s.w, ...patch } })); }
+  setSb(patch) { this.setState((s) => ({ sb: { ...s.sb, ...patch } })); }
+  fstore() { if (this.state.fstore) return this.state.fstore; if (!this._fs) this._fs = window.PDDFigma.load(); return this._fs; }
+  setFstore(st) { this._fs = st; window.PDDFigma.save(st); this.setState({ fstore: st }); }
+  patchFile(key, patch) { const st = this.fstore(); this.setFstore({ ...st, files: st.files.map((f) => (f.key === key ? { ...f, ...patch } : f)) }); }
+  setFg(p) { this.setState((s) => ({ fg: { ...s.fg, ...p } })); }
+  setDir(p) { this.setState((s) => ({ dir: { ...s.dir, ...p } })); }
+  setLk(p) { this.setState((s) => ({ lk: { ...s.lk, ...p } })); }
+  async syncFile(key) {
+    const FG = window.PDDFigma; const f = this.fstore().files.find((x) => x.key === key); if (!f) return;
+    try { const r = await FG.adapter.syncIndex(f, this.fstore().skip); const index = FG.buildIndex(r.pages, this.fstore().skip);
+      this.patchFile(key, { index, pageCount: r.pages.length, lastModified: r.lastModified || null, indexSyncedAt: new Date().toISOString(), name: r.name || f.name, nameSource: r.name ? 'figma' : f.nameSource }); this.showToast(`Index synced · ${r.pages.length} pages`);
+    } catch (err) { this.showToast(err.message); }
+  }
+  async scanFile(key) {
+    const FG = window.PDDFigma; const f = this.fstore().files.find((x) => x.key === key); if (!f) return;
+    this.patchFile(key, { usageStatus: 'running' });
+    try { const usage = await FG.adapter.scanUsage(f, this.fstore().skip); this.patchFile(key, { usage, usageStatus: 'ok', usageScannedAt: new Date().toISOString(), usageError: null }); this.showToast('Usage scan complete'); }
+    catch (err) { this.patchFile(key, { usageStatus: f.usageStatus === 'ok' ? 'ok' : 'never', usageError: err.message }); this.showToast(err.message); }
+  }
+  openLink(prefill) { const st = this.fstore(); const key = this.state.dir.fileKey || (st.files[0] || {}).key || ''; this.setState({ dialog: 'link', dirCard: null, lk: { issueId: '', fileKey: key, pageId: this.state.dir.pageId || '', frame: '', version: 'v1.0', ...prefill } }); }
+
+  renderVals() {
+    const P = window.PDD;
+    if (!P) return { rootHeight: this.props.height ?? '100vh', isDesktop: true };
+    const D = P.dates;
+    const lib = this.lib();
+    const c = P.ctx(lib, { figma: this.props.figmaSource ?? 'sample' });
+    const view = this.viewName();
+    const layout = this.props.layout ?? 'auto';
+    const isMobile = layout === 'mobile' || (layout === 'auto' && this.state.width < 760);
+    const themePref = this.state.themePref ?? this.props.theme ?? 'system';
+    const dark = themePref === 'dark' || (themePref === 'system' && this.state.sysDark);
+    const vm = (i) => P.issueVM(i, c);
+    const open = c.issues.filter(P.isOpen);
+    const bucket = P.bucketOf;
+    const arts = lib.articles;
+    const toRead = arts.filter((a) => a.status === 'to-read');
+    const linearSample = c.integrations.linear.mode !== 'connected';
+    const badge = (s) => (s.mode === 'sample' ? `Sample ${s.name} data` : `${s.name} ${s.label.toLowerCase()}`);
+    const openArt = (a) => ({ ...P.articleVM(a, c), open: () => this.openArticle(a.id) });
+
+    const nav = [['overview', 'Overview', 'LuminDS.SquaresFourIcon', ''], ['work', 'Lumin Work', 'LuminDS.ListChecksIcon', String(open.length)], ['directory', 'Directory', 'LuminDS.FolderOpenIcon', window.PDDFigma ? String(this.fstore().links.length || '') : ''], ['figma', 'Figma files', 'LuminDS.PenNibIcon', window.PDDFigma ? String(this.fstore().files.length) : ''], ['storybook', 'Storybook', 'LuminDS.BookOpenIcon', `${toRead.length} to read`]].map(([k, label, icon, count]) => ({
+      label, icon, count, current: view === k ? 'page' : undefined, bg: view === k ? 'var(--sidebar-accent)' : 'transparent', weight: view === k ? 600 : 500,
+      tabColor: view === k ? 'var(--foreground)' : 'var(--muted-foreground)', iconWeight: view === k ? 'fill' : 'regular', go: () => this.go(k),
+    }));
+
+    // ── Overview ──
+    const active = open.filter((i) => ['in-progress', 'in-review'].includes(bucket(i))).sort(P.byUrgency);
+    const attention = P.attentionItems(c.issues);
+    const inProgress = open.filter((i) => bucket(i) === 'in-progress').length;
+    const cycleLeft = D.daysUntil(c.cycle.endsAt);
+    const focusP = [...c.projects].map((p) => ({ p, n: active.filter((i) => i.projectId === p.id).length })).sort((a, b) => b.n - a.n || (a.p.role === 'Lead' ? -1 : 1))[0]?.p;
+    const files = [...c.figmaFiles].sort((a, b) => b.lastModified.localeCompare(a.lastModified));
+    const suggestions = P.readingForActiveWork(c.issues, c.projects, arts, 3);
+    const ov = {
+      dateLine: `${D.formatLong()} · ${c.cycle.name} ends in ${cycleLeft} day${cycleLeft === 1 ? '' : 's'}`,
+      greeting: `${D.greeting()}, ${c.viewer.name}`,
+      summary: `${inProgress} in progress, ${attention.length} need${attention.length === 1 ? 's' : ''} attention, ${toRead.length} to read in Storybook.`,
+      stats: [
+        { label: 'Assigned to me', value: open.length, sub: `across ${new Set(open.map((i) => i.projectId).filter(Boolean)).size} projects`, color: 'var(--foreground)', go: () => this.go('work', { w: { ...this.state.w, view: 'assigned' } }) },
+        { label: 'In progress', value: inProgress, sub: `${open.filter((i) => bucket(i) === 'in-review').length} in review`, color: 'var(--foreground)', go: () => this.go('work', { w: { ...this.state.w, view: 'progress' } }) },
+        { label: 'Needs attention', value: attention.length, sub: `${attention.filter((a) => a.tone === 'critical').length} overdue`, color: attention.some((a) => a.tone === 'critical') ? 'var(--destructive)' : 'var(--foreground)', go: () => this.scrollMain(this.attnRef.current) },
+        { label: 'To read', value: toRead.length, sub: `${arts.filter((a) => a.status === 'reading').length} in progress`, color: 'var(--foreground)', go: () => this.go('storybook', { sb: { ...this.state.sb, view: 'to-read' } }) },
+      ],
+      hasFocus: !!focusP,
+      focus: focusP ? { name: focusP.name, meta: `Focus project · ${focusP.role.toLowerCase()}${focusP.targetDate ? ` · target ${D.formatShort(focusP.targetDate)}` : ''}`, pct: Math.round(focusP.progress * 100), pctText: `${Math.round(focusP.progress * 100)}%` } : {},
+      active: active.slice(0, 6).map(vm),
+      attentionCount: String(attention.length || ''),
+      attention: attention.slice(0, 5).map(({ issue, reason, tone }) => ({ reason, title: issue.title, meta: issue.identifier + (issue.projectId ? ` · ${c.projectById.get(issue.projectId).name}` : ''), color: TONE_COLOR[tone], stripe: STRIPE[tone], open: () => this.openIssue(issue.identifier) })),
+      hasFiles: files.length > 0, noFiles: files.length === 0,
+      files: files.slice(0, 3).map((f, i) => P.fileVM(f, c, i)),
+      recentSaved: [...arts].sort((a, b) => b.savedAt.localeCompare(a.savedAt)).slice(0, 4).map(openArt),
+      suggestions: suggestions.map(({ article, issue, because }) => ({ ...openArt(article), why: `For ${issue.identifier} · ${because}` })),
+      noSuggestions: suggestions.length === 0,
+      shortcuts: [
+        { label: 'Up next', icon: 'LuminDS.ListChecksIcon', n: open.filter((i) => bucket(i) === 'up-next').length, go: () => this.go('work', { w: { ...this.state.w, view: 'next' } }) },
+        { label: 'Reading queue', icon: 'LuminDS.BookmarkSimpleIcon', n: toRead.length, go: () => this.go('storybook', { sb: { ...this.state.sb, view: 'to-read' } }) },
+        { label: 'Favorites', icon: 'LuminDS.StarIcon', n: arts.filter((a) => a.favorite).length, go: () => this.go('storybook', { sb: { ...this.state.sb, view: 'favorites' } }) },
+        { label: 'Current cycle', icon: 'LuminDS.ArrowsClockwiseIcon', n: '↗', go: () => window.open(c.links.activeCycle, '_blank') },
+        { label: 'Linear inbox', icon: 'LuminDS.BellIcon', n: '↗', go: () => window.open(c.links.inbox, '_blank') },
+        { label: 'Figma recents', icon: 'LuminDS.PenNibIcon', n: '↗', go: () => window.open(c.links.figmaRecents, '_blank') },
+      ],
+    };
+
+    // ── Lumin Work ──
+    const w = this.state.w;
+    const dcount = (i) => (c.designLinks.get(i.id) || []).length;
+    const tests = { assigned: P.isOpen, progress: (i) => ['in-progress', 'in-review'].includes(bucket(i)), next: (i) => bucket(i) === 'up-next', updated: (i) => Date.now() - new Date(i.updatedAt).getTime() < 7 * 86400000 };
+    const sorts = { urgency: P.byUrgency, due: (a, b) => (a.dueDate || '9999').localeCompare(b.dueDate || '9999'), priority: (a, b) => (a.priority || 5) - (b.priority || 5), updated: P.byUpdated };
+    const q = w.search.trim().toLowerCase();
+    const rows = c.issues.filter(tests[w.view]).filter((i) => !w.project || i.projectId === w.project)
+      .filter((i) => w.design === 'any' || (w.design === 'with' ? dcount(i) > 0 : dcount(i) === 0))
+      .filter((i) => !q || `${i.identifier} ${i.title} ${i.labels.join(' ')}`.toLowerCase().includes(q)).sort(sorts[w.sort]);
+    const sortHead = (k, label) => ({ label, active: w.sort === k, ariaSort: w.sort === k ? 'ascending' : undefined, weight: w.sort === k ? 600 : 500, color: w.sort === k ? 'var(--foreground)' : 'var(--muted-foreground)', set: () => this.setW({ sort: k }) });
+    const cycleIssues = c.issues.filter((i) => i.cycleId === c.cycle.id);
+    const missing = open.filter((i) => bucket(i) !== 'up-next' && dcount(i) === 0).concat(open.filter((i) => bucket(i) === 'up-next' && dcount(i) === 0));
+    const wk = {
+      cycleLine: `${c.cycle.name} · ${D.formatShort(c.cycle.startsAt)} – ${D.formatShort(c.cycle.endsAt)}`,
+      cycleName: c.cycle.name, cycleUrl: c.cycle.url, cyclePct: Math.round(c.cycle.progress * 100),
+      cycleHint: `${cycleLeft} day${cycleLeft === 1 ? '' : 's'} left · ${cycleIssues.filter((i) => bucket(i) === 'done').length} of ${cycleIssues.length} of your issues done`,
+      board: ['in-progress', 'in-review', 'up-next'].map((b) => {
+        const items = open.filter((i) => bucket(i) === b).sort(P.byUrgency);
+        return { key: b, label: P.BUCKET_LABEL[b], count: items.length, items: items.slice(0, 4).map(vm), showMore: items.length > 4, moreLabel: `Show all ${items.length}`, more: () => this.setW({ view: b === 'up-next' ? 'next' : 'progress' }), empty: !items.length, emptyText: `Nothing ${P.BUCKET_LABEL[b].toLowerCase()}.` };
+      }),
+      projects: c.projects.map((p) => ({ ...P.projectVM(p, c), selected: w.project === p.id })),
+      views: W_VIEWS.map(([value, label]) => ({ value, label, count: c.issues.filter(tests[value]).length })),
+      rows: rows.map((i) => { const v = vm(i); return { ...v, designTone: v.hasDesign ? 'design' : 'none', open: () => this.openIssue(i.identifier) }; }),
+      hasRows: rows.length > 0, noRows: rows.length === 0,
+      sortHeadsA: [sortHead('priority', 'Priority')], sortHeadsB: [sortHead('due', 'Due'), sortHead('updated', 'Updated')],
+      hasFiles: files.length > 0, noFiles: files.length === 0, files: files.map((f, i) => P.fileVM(f, c, i)),
+      missing: missing.map(vm), missingLabel: `Open issues without a design · ${missing.length}`,
+    };
+
+    // ── Storybook ──
+    const sb = this.state.sb;
+    const sources = lib.sources || [];
+    const isSourcesView = sb.view === 'sources';
+    const listView = isSourcesView ? 'all' : sb.view;
+    const results = P.queryLibrary(arts, { view: listView, topic: sb.topic, collection: sb.collection, status: sb.status || null, project: sb.project || null, source: sb.source || null, saved: sb.saved || null, sources, search: sb.search, sort: sb.sort });
+    const inView = arts.filter((a) => P.matchesView(a, listView));
+    const nameIn = (list, id) => (list.find((x) => x.id === id) || {}).name;
+    const chips = [
+      sb.topic && { label: `Topic: ${nameIn(P.TOPICS, sb.topic)}`, remove: () => this.setSb({ topic: null }) },
+      sb.collection && { label: `Collection: ${nameIn(lib.collections, sb.collection)}`, remove: () => this.setSb({ collection: null }) },
+      sb.project && { label: `Project: ${nameIn(c.projects, sb.project)}`, remove: () => this.setSb({ project: '' }) },
+      sb.source && { label: `Source: ${nameIn(sources, sb.source) || 'Removed'}`, remove: () => this.setSb({ source: '' }) },
+      sb.status && { label: `Status: ${P.STATUS_LABEL[sb.status]}`, remove: () => this.setSb({ status: '' }) },
+      sb.saved && { label: `Saved in the last ${P.RECENT_DAYS} days`, remove: () => this.setSb({ saved: '' }) },
+    ].filter(Boolean);
+    const hasFilters = chips.length > 0 || !!sb.search;
+    const facet = (on) => ({ pressed: on, bg: on ? 'var(--accent)' : 'transparent', color: on ? 'var(--foreground)' : 'var(--muted-foreground)', weight: on ? 500 : 400 });
+    const sbk = {
+      headLine: `${arts.length} references · ${toRead.length} to read · ${sources.length} sources · saved in this browser`,
+      views: SB_VIEWS.map(([value, label]) => ({ value, label, count: value === 'sources' ? sources.length : arts.filter((a) => P.matchesView(a, value)).length })),
+      isSourcesView, notSources: !isSourcesView,
+      topics: [{ name: 'All topics', n: inView.length, ...facet(!sb.topic && !sb.collection), toggle: () => this.setSb({ topic: null, collection: null }) }]
+        .concat(P.TOPICS.map((t) => ({ name: t.name, n: inView.filter((a) => a.topic === t.id).length, ...facet(sb.topic === t.id), toggle: () => this.setSb({ topic: sb.topic === t.id ? null : t.id }) }))),
+      collections: lib.collections.map((col) => ({ id: col.id, name: col.name, n: inView.filter((a) => a.collectionIds.includes(col.id)).length, ...facet(sb.collection === col.id), toggle: () => this.setSb({ collection: sb.collection === col.id ? null : col.id }) })),
+      chips, showChips: chips.length > 0 && !isSourcesView, hasFilterCount: chips.length > 0, filterCount: String(chips.length),
+      results: results.map((a) => P.articleVM(a, c)), count: results.length, countText: results.length === 1 ? 'article' : 'articles',
+      hasFilters, isEmpty: results.length === 0, showGrid: results.length > 0 && sb.layout === 'grid', showList: results.length > 0 && sb.layout === 'list',
+      emptyTitle: hasFilters ? 'No articles match' : sb.view === 'favorites' ? 'No favorites yet' : sb.view === 'reading' ? 'Nothing in progress' : 'Nothing here yet',
+      emptyBody: hasFilters ? 'Try another view, remove a filter or change the search.' : sb.view === 'favorites' ? 'Star an article to keep it here.' : 'Save an article to start your library.',
+      emptyActionLabel: hasFilters ? 'Clear filters' : 'Save an article',
+      emptyAction: hasFilters ? () => this.clearSb() : () => this.openSave(),
+      sourceOptions: sources.map((x) => ({ id: x.id, name: x.name })),
+      sourcesNote: `${sources.length} source${sources.length === 1 ? '' : 's'} · ${sources.filter((x) => x.enabled).length} active. Feeds aren’t fetched yet, so “updated” times are sample values until a feed reader is connected.`,
+      noSources: sources.length === 0,
+      sources: sources.map((x) => {
+        const items = arts.filter((a) => P.matchSource(a, x)); const unread = items.filter((a) => a.status !== 'read').length;
+        const confirm = this.state.confirmSource === x.id;
+        return {
+          id: x.id, name: x.name, url: x.url, urlLabel: x.url.replace(/^https?:\/\//, ''), meta: `${x.category} · updated ${D.timeAgo(x.updatedAt)}`,
+          counts: items.length ? `${items.length} saved · ${unread} unread` : 'No saved items yet', noItems: items.length === 0,
+          enabled: x.enabled, statusLabel: x.enabled ? 'Active' : 'Paused', statusTone: x.enabled ? 'done' : 'up-next', opacity: x.enabled ? 1 : 0.6,
+          switchText: x.enabled ? 'Following' : 'Paused', toggleLabel: x.enabled ? `Pause ${x.name}` : `Resume ${x.name}`, removeLabel: `Remove ${x.name}`,
+          confirm, notConfirm: !confirm,
+          browse: () => this.setSb({ view: 'all', source: x.id }),
+          toggle: (v) => { this.updateSource(x.id, { enabled: !!v }); this.showToast(v ? `Following ${x.name}` : `${x.name} paused`); },
+          askRemove: () => this.setState({ confirmSource: x.id }), cancelRemove: () => this.setState({ confirmSource: null }),
+          remove: () => { const snap = x; this.removeSource(x.id); this.setState({ confirmSource: null }); if (this.state.sb.source === x.id) this.setSb({ source: '' }); this.showToast('Source removed', { label: 'Undo', run: () => { const l = this.lib(); this.setLib({ ...l, sources: [...(l.sources || []), snap] }); } }); },
+        };
+      }),
+    };
+    const sf = this.state.srcForm; const st = this.state.srcTouched; const sErr = this.sourceErrors(sf);
+    const srcFm = {
+      err: { name: st ? sErr.name : '', url: st ? sErr.url : '' }, nameInvalid: st && !!sErr.name, urlInvalid: st && !!sErr.url,
+      setName: (e) => this.setSrc('name', val(e)), setUrl: (e) => this.setSrc('url', val(e)), setCategory: (e) => this.setSrc('category', val(e)), setEnabled: (v) => this.setSrc('enabled', !!v),
+      urlBlur: () => { const f2 = this.state.srcForm; if (!f2.name.trim() && isUrl(f2.url)) this.setSrc('name', P.hostOf(f2.url)); },
+      categories: P.SOURCE_CATEGORIES,
+    };
+
+    // ── Figma files + Directory ──
+    const FG = window.PDDFigma;
+    const fst = FG ? this.fstore() : { files: [], links: [], skip: { enabled: true, groups: [] } };
+    const fAd = FG ? FG.adapter : { mode: 'disconnected', canSync: false, canScan: false, reason: '' };
+    const fConn = fAd.mode === 'connected';
+    const fg = this.state.fg;
+    const fErr = FG ? FG.validateAdd(fg, fst.files) : { url: '', name: '' };
+    const fq = fg.search.trim().toLowerCase();
+    const fList = fst.files.filter((f) => (!fg.roleFilter || f.role === fg.roleFilter) && (!fq || `${f.name} ${f.key}`.toLowerCase().includes(fq)));
+    const collapsed = this.state.idxCollapsed || {};
+    const indexGroups = (file, selId, onSelect, q) => (!file || !file.index ? [] : file.index.groups.map((g) => {
+      const ck = `${file.key}:${g.id}`; const expanded = q ? true : !collapsed[ck];
+      const pages = g.pages.filter((p) => !q || p.name.toLowerCase().includes(q) || g.name.toLowerCase().includes(q));
+      return { id: g.id, name: g.name, skipped: !!g.skipped, expanded, caret: expanded ? 'LuminDS.CaretDownIcon' : 'LuminDS.CaretRightIcon', countText: `${g.pages.length} page${g.pages.length === 1 ? '' : 's'}`,
+        toggle: () => this.setState((st) => ({ idxCollapsed: { ...(st.idxCollapsed || {}), [ck]: !(st.idxCollapsed || {})[ck] } })),
+        pages: pages.map((p) => { const n = fst.links.filter((l) => l.fileKey === file.key && l.pageId === p.id).length; const on = selId === p.id;
+          return { name: p.name, count: String(n), hasCount: n > 0, showSkipped: !!p.skipped && !g.skipped, current: on ? 'page' : undefined, bg: on ? 'var(--accent)' : 'transparent', weight: on ? 500 : 400, color: p.skipped ? 'var(--muted-foreground)' : 'var(--foreground)', select: () => onSelect(p.id) }; }) };
+    }).filter((g) => g.pages.length));
+    const roleOf = (id) => (FG && FG.ROLE_BY_ID[id]) || { label: id, tone: 'up-next' };
+    const MUTED = 'var(--muted-foreground)', FGC = 'var(--foreground)';
+    const fgv = {
+      headLine: `${fst.files.length} tracked file${fst.files.length === 1 ? '' : 's'} · Figma ${fConn ? 'connected' : 'not connected'} · saved in this browser`,
+      notConnected: !fConn,
+      statusLine: 'Figma isn’t connected. You can track files by link with the details you enter. Sync Index and Scan usage stay off until Figma is connected, and folders can’t be listed, so add each file by its own link.',
+      err: fg.touched ? { url: fErr.url, name: fErr.name } : { url: '', name: '' },
+      urlInvalid: fg.touched && !!fErr.url, nameInvalid: fg.touched && !!fErr.name,
+      nameHint: fg.touched && fErr.name ? fErr.name : fg.nameAuto ? 'Taken from the link. Edit if needed.' : fConn ? 'Filled in from Figma when the link resolves.' : 'Enter the file name. Figma isn’t connected.',
+      nameHintColor: fg.touched && fErr.name ? 'var(--destructive)' : MUTED,
+      btnLabelVis: isMobile ? 'hidden' : 'hidden',
+      roles: FG ? FG.ROLES : [],
+      skipOn: fst.skip.enabled, skipOff: !fst.skip.enabled, skipOpacity: fst.skip.enabled ? 1 : 0.5,
+      skipGroups: (FG ? FG.SKIP_GROUPS : []).map((g) => ({ name: g, on: fst.skip.groups.includes(g), toggle: () => { const st = this.fstore(); this.setFstore({ ...st, skip: { ...st.skip, groups: toggleIn(st.skip.groups, g) } }); } })),
+      skipNote: fst.skip.enabled ? 'Pressed groups are still listed in Directory, marked Skipped, and left out of usage scans.' : 'Every page group will be indexed and scanned.',
+      countLine: fList.length === fst.files.length ? String(fst.files.length) : `${fList.length} of ${fst.files.length}`,
+      showHead: !isMobile && fList.length > 0,
+      rows: fList.map((f) => {
+        const r = roleOf(f.role); const confirm = this.state.confirmFile === f.key; const nl = fst.links.filter((l) => l.fileKey === f.key).length;
+        const usageText = f.usageStatus === 'ok' && f.usage ? `${f.usage.instances.toLocaleString()} instances on ${f.usage.pagesWithInstances} pages · scanned ${D.formatShort(f.usageScannedAt)}` : f.usageStatus === 'running' ? 'Scanning…' : 'Not scanned';
+        return {
+          key: f.key, name: f.name, url: f.url, role: f.role, roleLabel: r.label, roleTone: r.tone, keyShort: f.key.slice(0, 8), added: `added ${D.timeAgo(f.addedAt)}`, updated: f.lastModified ? `updated ${D.timeAgo(f.lastModified)}` : 'last updated unknown',
+          open: () => this.setState({ fgOpen: f.key, fgPage: null, confirmFile: null }),
+          hasLinks: nl > 0, linksText: `${nl} linked card${nl === 1 ? '' : 's'}`,
+          pages: f.pageCount == null ? (isMobile ? 'Pages —' : '—') : (isMobile ? `${f.pageCount} pages` : String(f.pageCount)), pagesColor: f.pageCount == null ? MUTED : FGC,
+          indexText: f.indexSyncedAt ? `Synced ${D.formatShort(f.indexSyncedAt)}` : 'Index not synced', indexColor: f.indexSyncedAt ? FGC : MUTED,
+          usageText, usageColor: f.usageStatus === 'ok' ? FGC : MUTED,
+          syncDisabled: !fAd.canSync, scanDisabled: !fAd.canScan, disabledTitle: fAd.canSync ? '' : fAd.reason,
+          sync: () => this.syncFile(f.key), scan: () => this.scanFile(f.key),
+          setRole: (e) => { this.patchFile(f.key, { role: val(e) }); this.showToast(`Role set to ${roleOf(val(e)).label}`); },
+          confirm, notConfirm: !confirm, askRemove: () => this.setState({ confirmFile: f.key }), cancelRemove: () => this.setState({ confirmFile: null }),
+          remove: () => { const st = this.fstore(); const snapF = f; const snapL = st.links.filter((l) => l.fileKey === f.key); this.setFstore({ ...st, files: st.files.filter((x) => x.key !== f.key), links: st.links.filter((l) => l.fileKey !== f.key) }); this.setState({ confirmFile: null }); this.showToast('Removed from directory', { label: 'Undo', run: () => { const s2 = this.fstore(); this.setFstore({ ...s2, files: [...s2.files, snapF], links: [...s2.links, ...snapL] }); } }); },
+          openDir: () => this.go('directory', { dir: { ...this.state.dir, fileKey: f.key, pageId: null } }),
+        };
+      }),
+      noFiles: fst.files.length === 0, filteredEmpty: fst.files.length > 0 && fList.length === 0,
+      hasUnavailable: !fConn && fst.files.length > 0, unavailable: `Sync Index and Scan usage are unavailable. ${FG ? FG.NOT_CONNECTED : ''}`,
+    };
+    const dS = this.state.dir;
+    const dKey = fst.files.some((f) => f.key === dS.fileKey) ? dS.fileKey : (fst.files[0] || {}).key || '';
+    const dFile = fst.files.find((f) => f.key === dKey) || null;
+    const dq = dS.search.trim().toLowerCase();
+    const dLinks = fst.links.filter((l) => l.fileKey === dKey);
+    const LS = FG ? FG.linear : { issues: [], fetchedAt: null, assignee: { name: '' } };
+    const linTone = (i) => (i.statusType === 'completed' || i.statusType === 'canceled' ? 'done' : i.statusType === 'started' ? (/review/i.test(i.status) ? 'in-review' : 'in-progress') : 'up-next');
+    const lin = (i) => ({ ...i, tone: linTone(i), meta: `${i.team} · ${i.project || 'No project'}`, open: () => this.setState({ dirCard: i.id, clNote: '' }) });
+    const groups = indexGroups(dFile, dS.pageId, (id) => this.setDir({ pageId: id }), dq);
+    let selPage = null;
+    if (dFile && dFile.index && dS.pageId) for (const g of dFile.index.groups) { const p = g.pages.find((x) => x.id === dS.pageId); if (p) { selPage = { ...p, group: g.name }; break; } }
+    const linkedIds = new Set(fst.links.map((l) => l.issueId));
+    const cardsAll = LS.issues.filter((i) => !dq || `${i.id} ${i.title} ${i.project || ''}`.toLowerCase().includes(dq));
+    const pageCards = selPage ? dLinks.filter((l) => l.pageId === selPage.id).map((l) => LS.issues.find((i) => i.id === l.issueId)).filter(Boolean).map(lin) : [];
+    const dirv = {
+      headLine: `${fst.files.length} tracked file${fst.files.length === 1 ? '' : 's'} · ${fst.files.filter((f) => f.index).length} indexed · ${fst.links.length} linked card${fst.links.length === 1 ? '' : 's'}`,
+      noFiles: fst.files.length === 0, fileOptions: fst.files.map((f) => ({ key: f.key, name: f.name })), fileKey: dKey,
+      fileName: dFile ? dFile.name : 'File index', fileSync: dFile ? (dFile.indexSyncedAt ? `Synced ${D.formatShort(dFile.indexSyncedAt)}` : 'Not synced') : '',
+      hasFile: !!dFile, actionLabel: dFile ? '' : 'Go to Figma files', emptyTitle: dFile ? 'No Figma index yet' : 'No tracked files',
+      emptyText: !dFile ? 'Add a Figma file by link to start building the directory.' : groups.length || !dFile.index ? (fConn ? 'Sync this file’s index to browse its pages here.' : 'Add a Figma file and sync its index once Figma is connected. Pages appear here after the first sync.') : 'No pages match.',
+      noIndex: !!dFile && !dFile.index, noIndexText: fConn ? 'Sync this file’s index to browse its pages here.' : 'Add a Figma file and sync its index once Figma is connected. Pages appear here after the first sync.',
+      groups, syncDisabled: !fAd.canSync, syncTitle: fAd.canSync ? '' : fAd.reason, syncCurrent: () => dFile && this.syncFile(dFile.key),
+      hasPage: !!selPage, noPage: !selPage, pagePath: selPage ? `${dFile.name} › ${selPage.group}` : '', pageName: selPage ? selPage.name : '',
+      pageCards, noPageCards: !!selPage && pageCards.length === 0,
+      linearBadge: LS.fetchedAt ? `From Linear · ${D.formatShort(LS.fetchedAt)}` : 'Linear unavailable',
+      linearLine: `${LS.issues.length} issues assigned to ${LS.assignee.name}, retrieved from Linear on ${LS.fetchedAt ? D.formatShort(LS.fetchedAt) : '—'}. ${fst.links.length ? `${linkedIds.size} linked to a design page.` : 'None are linked to a design page yet.'} Select a card to see its details.`,
+      cards: cardsAll.map((i) => ({ ...lin(i), linkText: linkedIds.has(i.id) ? 'Linked' : 'Not linked', linkTone: linkedIds.has(i.id) ? 'design' : 'none' })),
+      noCards: cardsAll.length === 0,
+    };
+    const dcI = this.state.dirCard ? LS.issues.find((i) => i.id === this.state.dirCard) : null;
+    let dcv = {};
+    if (dcI) {
+      const link = fst.links.find((l) => l.issueId === dcI.id); const lf = link ? fst.files.find((f) => f.key === link.fileKey) : null;
+      const kv = (k, v, muted) => ({ k, v, color: muted ? MUTED : FGC });
+      const pushHist = (entry, patch = {}) => { const st = this.fstore(); this.setFstore({ ...st, links: st.links.map((l) => (l.id === link.id ? { ...l, ...patch, history: [...l.history, { at: new Date().toISOString(), ...entry }] } : l)) }); };
+      dcv = {
+        ...lin(dcI), linked: !!link, notLinked: !link, version: link ? link.version : '',
+        kv: [kv('Cycle', dcI.cycleId || 'Not in a cycle', !dcI.cycleId), kv('Project', dcI.project || 'No project', !dcI.project), kv('Team', dcI.team), kv('Priority', P.PRIORITY_LABEL[dcI.priority] || 'No priority'),
+          kv('Design', link ? [lf ? lf.name : 'Removed file', link.groupName, link.pageName, link.frameName].filter(Boolean).join(' › ') : 'Not linked to a design page', !link),
+          kv('Specs', 'No spec link', true), kv('Labels', dcI.labels.join(', ') || 'None', !dcI.labels.length), kv('Updated in Linear', D.formatShort(dcI.updatedAt))],
+        designUrl: link && lf ? FG.frameUrl(lf, link.nodeId || link.pageId) : '',
+        history: link ? [...link.history].reverse().map((h) => ({ date: D.formatShort(h.at), text: h.text })) : [],
+        link: () => this.openLink({ issueId: dcI.id }),
+        addChangelog: (e) => { e && e.preventDefault && e.preventDefault(); const t = this.state.clNote.trim(); if (!t || !link) return; pushHist({ kind: 'changelog', text: t }); this.setState({ clNote: '' }); this.showToast('Changelog added'); },
+        tagVersion: () => { const t = this.state.clNote.trim(); if (!t || !link) return; pushHist({ kind: 'version', text: `${t} tagged` }, { version: t }); this.setState({ clNote: '' }); this.showToast(`Tagged ${t}`); },
+        unlink: () => { const st = this.fstore(); const snap = link; this.setFstore({ ...st, links: st.links.filter((l) => l.id !== link.id) }); this.showToast('Card unlinked', { label: 'Undo', run: () => { const s2 = this.fstore(); this.setFstore({ ...s2, links: [...s2.links, snap] }); } }); },
+      };
+    }
+    const fOpen = this.state.fgOpen ? fst.files.find((f) => f.key === this.state.fgOpen) || null : null;
+    let fsel = null;
+    if (fOpen && fOpen.index && this.state.fgPage) for (const g of fOpen.index.groups) { const p = g.pages.find((x) => x.id === this.state.fgPage); if (p) { fsel = { ...p, group: g.name }; break; } }
+    const kv2 = (k, v, m) => ({ k, v, color: m ? MUTED : FGC });
+    const usageLine = (f) => (f.usageStatus === 'ok' && f.usage ? `${f.usage.instances.toLocaleString()} instances on ${f.usage.pagesWithInstances} pages · scanned ${D.formatShort(f.usageScannedAt)}` : 'Not scanned');
+    const fLinks = fsel ? fst.links.filter((l) => l.fileKey === fOpen.key && l.pageId === fsel.id) : [];
+    const fgd = fOpen ? {
+      isOpen: true, notOpen: false, name: fOpen.name, url: fOpen.url, roleLabel: roleOf(fOpen.role).label, roleTone: roleOf(fOpen.role).tone,
+      subLine: fOpen.scope ? 'New IA design scope · tracked by link' : `Tracked by link · added ${D.timeAgo(fOpen.addedAt)}`,
+      syncDisabled: !fAd.canSync, scanDisabled: !fAd.canScan, disabledTitle: fAd.canSync ? '' : fAd.reason, sync: () => this.syncFile(fOpen.key), scan: () => this.scanFile(fOpen.key),
+      showUnavailable: !fConn, unavailable: `Sync Index and Scan usage are unavailable. ${FG ? FG.NOT_CONNECTED : ''}`,
+      groups: indexGroups(fOpen, this.state.fgPage, (id) => this.setState({ fgPage: id }), ''),
+      indexSync: fOpen.indexSyncedAt ? `Synced ${D.formatShort(fOpen.indexSyncedAt)}` : 'Not synced',
+      indexEmptyTitle: 'Index unavailable',
+      indexEmptyText: fConn ? 'Sync Index to read this file’s pages.' : 'This file hasn’t been indexed. Connect Figma, then Sync Index to read its real pages and groups. Nothing is shown until then.',
+      hasPage: !!fsel, noPage: !fsel, pagePath: fsel ? `${fOpen.name} › ${fsel.group}` : '', pageName: fsel ? fsel.name : '',
+      pageUrl: fsel ? FG.frameUrl(fOpen, fsel.nodeId) : '',
+      pageKv: fsel ? [kv2('Group', fsel.group), kv2('Page ID', fsel.nodeId), kv2('Status', fsel.skipped ? 'Skipped. Listed here, left out of usage scans and Directory linking.' : 'Active', fsel.skipped), kv2('Component usage', usageLine(fOpen), fOpen.usageStatus !== 'ok')] : [],
+      pageCards: fLinks.map((l) => LS.issues.find((i) => i.id === l.issueId)).filter(Boolean).map(lin), noPageCards: !!fsel && fLinks.length === 0,
+      noCardsText: fsel && fsel.skipped ? 'Skipped pages can’t be linked to Linear cards.' : 'No Linear cards are linked to this page yet.',
+      canLinkHere: !!fsel && !fsel.skipped, linkHere: () => this.openLink({ fileKey: fOpen.key, pageId: fsel ? fsel.id : '' }),
+      fileKv: [kv2('Role', roleOf(fOpen.role).label), kv2('Last updated', fOpen.lastModified ? D.formatShort(fOpen.lastModified) : 'Unknown, needs Figma', !fOpen.lastModified),
+        kv2('Pages', fOpen.pageCount == null ? 'Unknown, needs Figma' : String(fOpen.pageCount), fOpen.pageCount == null), kv2('Last index sync', fOpen.indexSyncedAt ? D.formatShort(fOpen.indexSyncedAt) : 'Never', !fOpen.indexSyncedAt),
+        kv2('Component usage', usageLine(fOpen), fOpen.usageStatus !== 'ok'), kv2('Linked cards', String(fst.links.filter((l) => l.fileKey === fOpen.key).length)), kv2('File key', fOpen.key)],
+      hint: fOpen.index ? 'Select a page in the index to see its path, linked Linear cards and a direct link to the page in Figma.' : 'Once indexed, this file’s real pages appear in the index panel and in Directory. Both views read the same index.',
+      back: () => this.setState({ fgOpen: null, fgPage: null }),
+    } : { isOpen: false, notOpen: true };
+    const lk = this.state.lk;
+    const lkFile = fst.files.find((f) => f.key === lk.fileKey) || fst.files.find((f) => f.key === dKey) || null;
+    const lkPages = lkFile && lkFile.index ? lkFile.index.groups.flatMap((g) => g.pages.filter((p) => !p.skipped).map((p) => ({ id: p.id, name: `${g.name} › ${p.name}`, page: p.name, group: g.name }))) : [];
+    const lkMissing = !LS.issues.length ? 'No Linear cards are available.' : !lkFile ? 'Track a Figma file first, on Figma files.' : !lkFile.index ? `“${lkFile.name}” has no index yet, so there are no design pages to link to. Sync Index needs Figma to be connected.` : !lk.issueId ? 'Choose a Linear card.' : !lk.pageId ? 'Choose a design page.' : fst.links.some((l) => l.issueId === lk.issueId && l.pageId === lk.pageId && l.fileKey === lkFile.key) ? 'This card is already linked to that page.' : '';
+    const lkv = {
+      issueOptions: LS.issues.map((i) => ({ id: i.id, name: `${i.id} · ${i.title}` })), fileOptions: fst.files.map((f) => ({ key: f.key, name: f.name })), fileKey: lkFile ? lkFile.key : '', noFiles: !fst.files.length,
+      pageOptions: lkPages, noPages: lkPages.length === 0, pagePlaceholder: lkPages.length ? 'Choose a page' : 'No index yet',
+      missing: lkMissing, hasMissing: !!lkMissing, linkDisabled: !!lkMissing,
+    };
+
+    // ── Issue drawer ──
+    const issueId = this.issueId();
+    const issue = issueId ? c.issues.find((i) => i.identifier === issueId) : null;
+    let dI = {};
+    if (issue) {
+      const v = vm(issue); const p = issue.projectId ? c.projectById.get(issue.projectId) : null;
+      const designs = c.designLinks.get(issue.id) || [];
+      const reading = P.relatedArticles(issue, p, arts, 4);
+      dI = {
+        ...v, label: `${issue.identifier} ${issue.title}`,
+        kv: [
+          { k: 'Project', v: p ? `${p.name} · ${p.role.toLowerCase()}` : 'No project' },
+          { k: 'Cycle', v: issue.cycleId === c.cycle.id ? `${c.cycle.name} · ends ${D.formatShort(c.cycle.endsAt)}` : 'Not in a cycle' },
+          { k: 'Due', v: issue.dueDate ? D.formatShort(issue.dueDate) : 'No due date' },
+          { k: 'Updated', v: D.timeAgo(issue.updatedAt) },
+          { k: 'Comments', v: String(issue.commentCount) },
+        ],
+        designs: designs.map(({ file, via }) => ({ name: file.name, url: file.url, meta: `Edited ${D.timeAgo(file.lastModified)} · ${via === 'attachment' ? 'attached in Linear' : 'matched by file name'}`, frames: file.frames.map((fr) => ({ name: fr.name, url: P.frameUrl(file, fr.nodeId) })) })),
+        noDesign: designs.length === 0,
+        noDesignText: `Attach the Figma file to this issue in Linear, or put ${issue.identifier} in the file name, and it will show here.`,
+        reading: reading.map(({ article, because }) => ({ ...openArt(article), meta: `${P.topicName(article.topic)} · ${article.publication}`, because: `Matches ${because}` })),
+        noReading: reading.length === 0,
+        saveRef: () => this.openSave({ projects: issue.projectId ? [issue.projectId] : [], tags: issue.labels.slice(0, 3).join(', ') }),
+      };
+    }
+
+    // ── Article drawer ──
+    const artId = this.articleId();
+    const art = artId ? arts.find((a) => a.id === artId) : null;
+    let dA = {};
+    if (art) {
+      const av = P.articleVM(art, c);
+      const tagSet = new Set(art.tags);
+      const related = open.filter((i) => (i.projectId && art.relatedProjectIds.includes(i.projectId)) || i.labels.some((l) => tagSet.has(l))).slice(0, 4);
+      const cols = lib.collections.filter((x) => art.collectionIds.includes(x.id)).map((x) => x.name);
+      const projs = art.relatedProjectIds.map((id) => c.projectById.get(id)).filter(Boolean).map((p) => p.name);
+      dA = {
+        ...av, headLine: `${av.topicName} · saved ${av.saved}`, noTags: art.tags.length === 0,
+        collections: cols.length ? cols.join(', ') : 'None', projects: projs.length ? projs.join(', ') : 'Not linked',
+        starWeight: art.favorite ? 'fill' : 'regular', starColor: art.favorite ? 'var(--card-amber-foreground)' : 'currentColor',
+        toggleFav: () => this.toggleFav(art.id),
+        setStatus: (status) => status && this.updateArticle(art.id, { status }),
+        relatedIssues: related.map(vm), noRelated: related.length === 0,
+        remove: () => { const snap = art; this.removeArticle(art.id); this.setState({ article: null, notes: null, confirmDelete: false }); this.showToast('Article removed', { label: 'Undo', run: () => this.addArticle({ ...snap }) }); },
+        edit: () => { const notes = this.state.notes ?? art.notes; this.setState({ article: null, notes: null, dialog: 'save', touched: false, form: { ...EMPTY_FORM, id: art.id, url: art.url, title: art.title, author: art.author, publication: art.publication, topic: art.topic, status: art.status, summary: art.summary, notes, tags: art.tags.join(', '), projects: art.relatedProjectIds, collections: art.collectionIds, favorite: art.favorite } }); },
+      };
+    }
+
+    // ── Form ──
+    const f = this.state.form; const errs = this.formErrors(f); const t = this.state.touched;
+    const fm = {
+      heading: f.id ? 'Edit article' : 'Save an article', submitLabel: f.id ? 'Save changes' : 'Save to Storybook',
+      err: { url: t ? errs.url : '', title: t ? errs.title : '', topic: t ? errs.topic : '' },
+      urlInvalid: t && !!errs.url, titleInvalid: t && !!errs.title, topicInvalid: t && !!errs.topic,
+      set: Object.fromEntries(['url', 'title', 'author', 'publication', 'topic', 'summary', 'notes', 'tags'].map((k) => [k, (e) => this.setForm(k, val(e))])),
+      urlBlur: () => { if (!this.state.form.publication && isUrl(this.state.form.url)) this.setForm('publication', hostLabel(this.state.form.url)); },
+      setStatus: (s) => s && this.setForm('status', s),
+      setFav: (v) => this.setForm('favorite', !!v),
+      projectChips: c.projects.map((p) => ({ name: p.name, on: f.projects.includes(p.id), toggle: () => this.setForm('projects', toggleIn(this.state.form.projects, p.id)) })),
+      collectionChips: lib.collections.map((x) => ({ name: x.name, on: f.collections.includes(x.id), toggle: () => this.setForm('collections', toggleIn(this.state.form.collections, x.id)) })),
+    };
+
+    const dialog = this.dialog();
+    const ints = [c.integrations.linear, c.integrations.figma];
+    const toast = this.state.toast;
+    const screen = issue ? `Issue ${issue.identifier}` : art ? `Article` : dialog === 'save' ? 'Save article' : dialog === 'integrations' ? 'Integrations' : dialog === 'source' ? 'Add source' : { overview: 'Overview', work: 'Lumin Work', directory: 'Directory', figma: 'Figma files', storybook: 'Storybook' }[view];
+
+    return {
+      rootRef: this.rootRef, mainRef: this.mainRef, figmaRef: this.figmaRef, attnRef: this.attnRef,
+      rootHeight: this.props.height ?? '100vh', themeClass: dark ? 'dark' : '', screenLabel: `${isMobile ? 'Mobile' : 'Desktop'} · ${screen}`,
+      isDesktop: !isMobile, isMobile, shellDir: isMobile ? 'column' : 'row', pagePad: isMobile ? '16px 16px 32px' : '28px 32px 48px',
+      drawerW: isMobile ? '100%' : 'min(500px, 100%)', dialogPad: isMobile ? '0' : '24px', toastBottom: isMobile ? '80px' : '24px',
+      libraryCols: !isMobile && this.state.sb.railOpen ? '176px minmax(0,1fr)' : 'minmax(0,1fr)', rowVariant: isMobile ? 'compact' : 'full',
+      viewer: c.viewer, viewerInitial: c.viewer.name.slice(0, 1), viewerSub: `${c.viewer.role} · ${c.viewer.team}`,
+      nav, links: c.links,
+      quickLinks: [{ label: 'Linear · My issues', href: c.links.myIssues }, { label: 'Linear · Current cycle', href: c.links.activeCycle }, { label: 'Figma · Recents', href: c.links.figmaRecents }],
+      integrationList: ints.map((s) => ({ name: s.name, label: s.label, dot: DOT[s.mode] })),
+      integrationRows: ints.map((s) => ({ name: s.name, label: s.label, dot: DOT[s.mode], surfaces: DETAILS[s.id].surfaces, howTo: DETAILS[s.id].howTo, intro: s.mode === 'sample' ? `Not connected. Everything marked “Sample ${s.name} data” is illustrative and will be replaced once the integration is live.` : s.mode === 'connected' ? 'Connected.' : 'Not connected. Sections that need it show an empty state.' })),
+      libraryNote: `${arts.length} articles. Your library is stored in this browser, so it won’t follow you to another device until a synced store is added (src/data/storybook/repository.ts).`,
+      linearSample, linearBadge: badge(c.integrations.linear), figmaBadge: badge(c.integrations.figma),
+      themePref, themeIcon: dark ? 'LuminDS.MoonIcon' : 'LuminDS.SunIcon',
+      setTheme: (v) => { if (!v) return; this.setState({ themePref: v }); try { localStorage.setItem('pdd.claude-design.theme', v); } catch (e) {} },
+      cycleTheme: () => { const n = { system: 'light', light: 'dark', dark: 'system' }[themePref]; this.setState({ themePref: n }); try { localStorage.setItem('pdd.claude-design.theme', n); } catch (e) {} },
+      isOverview: view === 'overview', isWork: view === 'work', isStorybook: view === 'storybook', isDirectory: view === 'directory', isFigmaFiles: view === 'figma',
+      fg, fgv, fgd, dir: dS, dirv, dc: dcv, lk, lkv, clNote: this.state.clNote,
+      fgAddCols: isMobile ? 'minmax(0,1fr)' : 'minmax(0,2.2fr) minmax(0,1.4fr) minmax(0,1fr) auto',
+      fgRowCols: isMobile ? 'minmax(0,1fr)' : 'minmax(0,2.4fr) 64px minmax(0,1fr) minmax(0,1.3fr) auto', fgActionsJustify: isMobile ? 'flex-start' : 'flex-end',
+      dirCols: isMobile || this.state.width < 1100 ? 'minmax(0,1fr)' : '260px minmax(0,1fr)',
+      goFigmaFiles: () => this.go('figma'),
+      setFgUrl: (e) => { const v = val(e); const p = FG ? FG.parseFigmaUrl(v) : {}; const patch = { url: v }; if ((!this.state.fg.name || this.state.fg.nameAuto) && p.slugName) { patch.name = p.slugName; patch.nameAuto = true; } else if (this.state.fg.nameAuto && !p.slugName) { patch.name = ''; patch.nameAuto = false; } this.setFg(patch); },
+      setFgName: (e) => this.setFg({ name: val(e), nameAuto: false }), setFgRole: (e) => this.setFg({ role: val(e) }),
+      setFgSearch: (e) => this.setFg({ search: val(e) }), setFgRoleFilter: (e) => this.setFg({ roleFilter: val(e) }),
+      toggleSkip: (v) => { const st = this.fstore(); this.setFstore({ ...st, skip: { ...st.skip, enabled: !!v } }); },
+      addFigmaFile: (e) => {
+        e && e.preventDefault && e.preventDefault();
+        const f2 = this.state.fg; const er = FG.validateAdd(f2, this.fstore().files);
+        if (er.url || er.name) { this.setFg({ touched: true }); return; }
+        const st = this.fstore(); const nf = FG.newFile({ key: er.parsed.key, url: f2.url.trim(), name: f2.name.trim(), role: f2.role, nameSource: f2.nameAuto ? 'link' : 'manual' });
+        this.setFstore({ ...st, files: [nf, ...st.files] }); this.setFg({ url: '', name: '', touched: false, nameAuto: false });
+        this.showToast(`Added “${nf.name}”`);
+      },
+      setDirFile: (e) => this.setDir({ fileKey: val(e), pageId: null }), setDirSearch: (e) => this.setDir({ search: val(e) }),
+      openLinkBlank: () => this.openLink({}), setClNote: (e) => this.setState({ clNote: val(e) }),
+      setLkIssue: (e) => this.setLk({ issueId: val(e) }), setLkFile: (e) => this.setLk({ fileKey: val(e), pageId: '' }), setLkPage: (e) => this.setLk({ pageId: val(e) }),
+      setLkFrame: (e) => this.setLk({ frame: val(e) }), setLkVersion: (e) => this.setLk({ version: val(e) }),
+      submitLink: (e) => {
+        e && e.preventDefault && e.preventDefault(); if (lkMissing) return;
+        const pg = lkPages.find((p) => p.id === lk.pageId); const ver = lk.version.trim() || 'v1.0'; const now = new Date().toISOString();
+        const nl = { id: `lnk-${Date.now().toString(36)}`, fileKey: lkFile.key, pageId: pg.id, pageName: pg.page, groupName: pg.group, nodeId: pg.id, frameName: lk.frame.trim() || null, issueId: lk.issueId, version: ver,
+          history: [{ at: now, kind: 'version', text: `${ver} Starting version` }, { at: now, kind: 'link', text: `Linked ${lk.issueId} to ${pg.page}` }] };
+        const st = this.fstore(); this.setFstore({ ...st, links: [...st.links, nl] }); this.setState({ dialog: null, dirCard: lk.issueId }); this.showToast('Card linked');
+      },
+      showDirCard: !!dcI, showLinkDialog: dialog === 'link',
+      ov, wk, sbk, w, sb, dI, dA, fm, form: f,
+      projectOptions: c.projects.map((p) => ({ id: p.id, name: p.name })), topicOptions: P.TOPICS,
+      sbTopicValue: sb.topic || '', sbCollectionValue: sb.collection || '',
+      openIssue: this.openIssue, openArticle: this.openArticle, closeDetail: this.closeDetail, toggleFav: this.toggleFav,
+      openSaveBlank: () => this.openSave(), openIntegrations: () => this.setState({ dialog: 'integrations' }), closeDialog: this.closeDialog,
+      goWork: () => this.go('work'), goStorybook: () => this.go('storybook'),
+      goFigma: () => this.go('work', {}, () => this.scrollMain(this.figmaRef.current)),
+      setWorkView: (v) => v && this.setW({ view: v, sort: v === 'updated' ? 'updated' : 'urgency' }),
+      setWorkSearch: (e) => this.setW({ search: val(e) }), setWorkProject: (e) => this.setW({ project: val(e) }), setWorkDesign: (e) => this.setW({ design: val(e) }),
+      toggleProject: (id) => this.setW({ project: this.state.w.project === id ? '' : id }),
+      clearWorkFilters: () => this.setW({ search: '', design: 'any', project: '', view: 'assigned' }),
+      setSbView: (v) => v && this.setSb({ view: v, filterOpen: false }), setSbSearch: (e) => this.setSb({ search: val(e) }), setSbStatus: (e) => this.setSb({ status: val(e) }),
+      setSbProject: (e) => this.setSb({ project: val(e) }), setSbSort: (e) => this.setSb({ sort: val(e) }), setSbSource: (e) => this.setSb({ source: val(e) }), setSbSaved: (e) => this.setSb({ saved: val(e) }),
+      setSbTopic: (e) => this.setSb({ topic: val(e) || null }), setSbCollection: (e) => this.setSb({ collection: val(e) || null }),
+      setSbLayout: (v) => { if (!v) return; this.setSb({ layout: v }); try { localStorage.setItem('pdd.claude-design.sbLayout', v); } catch (e) {} },
+      toggleRail: (v) => { this.setSb({ railOpen: !!v }); try { localStorage.setItem('pdd.claude-design.sbRail', v ? 'open' : 'closed'); } catch (e) {} },
+      toggleFilter: () => this.setSb({ filterOpen: !this.state.sb.filterOpen }), closeFilter: () => this.setSb({ filterOpen: false }),
+      openAddSource: () => this.setState({ dialog: 'source', srcForm: { ...EMPTY_SOURCE }, srcTouched: false }),
+      submitSource: (e) => {
+        e && e.preventDefault && e.preventDefault();
+        const f2 = this.state.srcForm; const er = this.sourceErrors(f2); this.setState({ srcTouched: true });
+        if (er.name || er.url) return;
+        const l = this.lib(); const nx = { id: `src-${Date.now().toString(36)}`, name: f2.name.trim(), url: f2.url.trim(), category: f2.category, enabled: f2.enabled, updatedAt: new Date().toISOString() };
+        this.setLib({ ...l, sources: [...(l.sources || []), nx] }); this.setState({ dialog: null }); this.showToast(`Source “${nx.name}” added`);
+      },
+      srcForm: sf, srcFm, showRail: !isMobile && sb.railOpen,
+      setNewCol: (e) => this.setSb({ newCol: val(e) }),
+      createCollection: (e) => {
+        e && e.preventDefault && e.preventDefault();
+        const name = this.state.sb.newCol.trim(); if (!name) return;
+        const l = this.lib(); const col = { id: `col-${Date.now().toString(36)}`, name };
+        this.setLib({ ...l, collections: [...l.collections, col] });
+        this.setSb({ newCol: '', collection: col.id, topic: null }); this.showToast(`Collection “${name}” created`);
+      },
+      clearSbFilters: () => this.clearSb(),
+      notesValue: this.state.notes ?? (art ? art.notes : ''), setNotes: (e) => this.setState({ notes: val(e) }), saveNotes: this.saveNotes,
+      confirmDelete: this.state.confirmDelete, notConfirmDelete: !this.state.confirmDelete,
+      askDelete: () => this.setState({ confirmDelete: true }), cancelDelete: () => this.setState({ confirmDelete: false }),
+      confirmReset: this.state.confirmReset, notConfirmReset: !this.state.confirmReset,
+      askReset: () => this.setState({ confirmReset: true }), cancelReset: () => this.setState({ confirmReset: false }),
+      resetLibrary: () => { this.setLib(P.starterLibrary()); this.setState({ confirmReset: false }); this.showToast('Library reset to the starter set'); },
+      submitForm: this.submitForm,
+      showIssue: !!issueId && !!issue, showArticle: !!artId && !!art, showForm: dialog === 'save', showIntegrations: dialog === 'integrations', showSourceForm: dialog === 'source',
+      hasToast: !!toast, toast: toast || {},
+    };
+  }
+  clearSb() { this.setSb({ search: '', status: '', project: '', source: '', saved: '', topic: null, collection: null }); }
+  setSrc(k, v) { this.setState((s) => ({ srcForm: { ...s.srcForm, [k]: v } })); }
+  sourceErrors(f) { return { name: !f.name.trim() ? 'Add a name.' : '', url: !f.url.trim() ? 'Add the website or feed link.' : !isUrl(f.url) ? 'Use a full link starting with https://' : '' }; }
+}
+</script>
+</body>
+</html>

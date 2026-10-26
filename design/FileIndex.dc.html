@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/fonts/fonts.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.css">
+  <link rel="stylesheet" href="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/styles.css">
+  <script src="_ds/lumin-design-system-c071ef8f-34eb-4b94-afe2-cfc8a6283075/_ds_bundle.js"></script>
+</helmet>
+<aside aria-label="File index" style="display:flex; flex-direction:column; gap:10px; padding:14px; border:1px solid var(--border); border-radius:12px; background:var(--card); color:var(--foreground); font-family:'Inter', ui-sans-serif, system-ui, sans-serif; font-size:14px;">
+  <div style="display:flex; align-items:baseline; justify-content:space-between; gap:8px;">
+    <strong style="font-size:13px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ title }}</strong>
+    <span style="flex:none; font-size:12px; color:var(--muted-foreground);">{{ syncText }}</span>
+  </div>
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; flex-direction:column; gap:8px; padding:12px 4px; align-items:flex-start;">
+      <strong style="font-size:13px; font-weight:600;">{{ emptyTitle }}</strong>
+      <span style="font-size:13px; color:var(--muted-foreground); text-wrap:pretty;">{{ emptyText }}</span>
+      <sc-if value="{{ showSync }}" hint-placeholder-val="{{ true }}">
+        <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" disabled="{{ syncDisabled }}" title="{{ syncTitle }}" onClick="{{ sync }}" hint-size="auto,28px"><x-import component-from-global-scope="LuminDS.ArrowsClockwiseIcon" size="14" hint-size="14px,14px"></x-import>Sync Index</x-import>
+      </sc-if>
+      <sc-if value="{{ showAction }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="LuminDS.Button" variant="outline" size="sm" onClick="{{ action }}" hint-size="auto,28px">{{ actionLabel }}</x-import>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="0">
+    <div role="group" aria-label="{{ g.name }}" style="display:flex; flex-direction:column; gap:2px;">
+      <button type="button" aria-expanded="{{ g.expanded }}" onClick="{{ g.toggle }}" style="display:flex; align-items:center; gap:6px; padding:6px 6px 4px; border:0; border-radius:6px; background:transparent; font:inherit; color:var(--muted-foreground); text-align:left; cursor:pointer;" style-hover="color:var(--foreground);">
+        <x-import component-from-global-scope="{{ g.caret }}" size="12" hint-size="12px,12px"></x-import>
+        <span style="flex:1; min-width:0; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ g.name }}</span>
+        <sc-if value="{{ g.skipped }}" hint-placeholder-val="{{ false }}"><dc-import name="Pill" label="Skipped" tone="none" hint-size="auto,20px"></dc-import></sc-if>
+        <span style="flex:none; font-size:11px; font-variant-numeric:tabular-nums;">{{ g.countText }}</span>
+      </button>
+      <sc-if value="{{ g.expanded }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ g.pages }}" as="p" hint-placeholder-count="3">
+          <button type="button" aria-current="{{ p.current }}" onClick="{{ p.select }}" style="display:flex; align-items:center; gap:8px; min-height:32px; padding:0 8px 0 24px; border:0; border-radius:8px; background:{{ p.bg }}; color:{{ p.color }}; font:inherit; font-size:13px; font-weight:{{ p.weight }}; text-align:left; cursor:pointer;" style-hover="background:var(--muted);">
+            <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ p.name }}</span>
+            <sc-if value="{{ p.showSkipped }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; color:var(--muted-foreground);">Skipped</span></sc-if>
+            <sc-if value="{{ p.hasCount }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px; height:20px; padding:0 6px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; background:var(--card-indigo); color:var(--card-indigo-foreground); font-size:11px; font-weight:600;">{{ p.count }}</span></sc-if>
+          </button>
+        </sc-for>
+      </sc-if>
+    </div>
+  </sc-for>
+</aside>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:300,&quot;height&quot;:260},&quot;title&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;LEX-UI-100 - App shell&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;syncText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Not synced&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;groups&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;IndexGroupVM[]&quot;},&quot;emptyTitle&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;No Figma index yet&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;emptyText&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showSync&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;syncDisabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;syncTitle&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;onSync&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;},&quot;actionLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onAction&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const groups = this.props.groups ?? [];
+    return {
+      title: this.props.title ?? 'File index', syncText: this.props.syncText ?? '',
+      groups, isEmpty: !groups.length,
+      emptyTitle: this.props.emptyTitle ?? 'No Figma index yet',
+      emptyText: this.props.emptyText ?? 'Sync this file’s index once Figma is connected. Pages appear here after the first sync.',
+      showSync: this.props.showSync ?? true, syncDisabled: this.props.syncDisabled ?? true, syncTitle: this.props.syncTitle ?? '',
+      sync: () => this.props.onSync && this.props.onSync(),
+      showAction: !!this.props.actionLabel, actionLabel: this.props.actionLabel ?? '', action: () => this.props.onAction && this.props.onAction(),
+    };
+  }
+}
+</script>
+</body>
+</html>
