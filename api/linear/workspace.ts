@@ -1,6 +1,6 @@
-import { requireAuth } from '../../server/auth';
-import { json } from '../../server/http';
-import { getLinearWorkspace } from '../../server/linear';
+import { requireAuth } from '../../server/auth.js';
+import { json } from '../../server/http.js';
+import { getLinearWorkspace } from '../../server/linear.js';
 
 // GET /api/linear/workspace → { status, viewer, issues, projects, cycle, links, fetchedAt } (HANDOFF §7.1)
 export async function GET(req: Request) {

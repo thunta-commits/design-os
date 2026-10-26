@@ -1,7 +1,7 @@
 /* Linear GraphQL → domain model (HANDOFF §7.1). Server-only: LINEAR_API_KEY never reaches the browser.
    Identity: the key's viewer when its email matches LINEAR_VIEWER_EMAIL, otherwise that user looked up by email. */
 import type { Cycle, Issue, LinearWorkspace, Project } from '../src/data/types';
-import { env } from './http';
+import { env } from './http.js';
 
 const ENDPOINT = 'https://api.linear.app/graphql';
 const DEFAULT_EMAIL = 'thunta@luminpdf.com';

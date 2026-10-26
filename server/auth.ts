@@ -1,7 +1,7 @@
 /* Single-user login: APP_PASSWORD checked once, then an HMAC-signed session cookie (SESSION_SECRET).
    Every data endpoint calls requireAuth(); the static app shell itself holds no private data. */
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { env, errorJson } from './http';
+import { env, errorJson } from './http.js';
 
 export const COOKIE = 'dos_session';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 days

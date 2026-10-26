@@ -1,5 +1,5 @@
-import { authConfigured, checkPassword, isSecure, sessionCookie } from '../../server/auth';
-import { errorJson, json } from '../../server/http';
+import { authConfigured, checkPassword, isSecure, sessionCookie } from '../../server/auth.js';
+import { errorJson, json } from '../../server/http.js';
 
 export async function POST(req: Request) {
   if (!authConfigured()) return errorJson(503, 'Login isn’t configured. Set APP_PASSWORD and SESSION_SECRET.');
