@@ -142,6 +142,12 @@ export interface TrackedFile {
   usageScannedAt: string | null;
   usageStatus: 'never' | 'running' | 'ok' | 'error';
   usageError: string | null;
+  /** Signed preview image from Figma; expires, so it is refreshed on each sync. */
+  thumbnailUrl?: string | null;
+  /** State of the latest Sync Index attempt. `index` and `indexSyncedAt` always describe the last *successful* sync. */
+  indexSyncStatus?: 'syncing' | 'error' | null;
+  indexSyncError?: string | null;
+  indexAttemptedAt?: string | null;
 }
 export interface HistoryEntry { at: string; kind: 'version' | 'link' | 'changelog' | 'unlink'; text: string; url?: string }
 export interface DesignLink {

@@ -1,6 +1,6 @@
 // App shell — rail (desktop ≥760px), top bar + tab bar (mobile), main scroller, overlays, toast.
 import type { ComponentType } from 'react';
-import { BookOpenIcon, Button, DesktopIcon, FolderOpenIcon, ListChecksIcon, MoonIcon, PenNibIcon, PlugIcon, PlusIcon, SquaresFourIcon, SunIcon, ToggleGroup, ToggleGroupItem, ArrowUpRightIcon } from '../components/ds';
+import { BookOpenIcon, Button, DesktopIcon, FolderOpenIcon, ListChecksIcon, MoonIcon, PenNibIcon, PlugIcon, PlusIcon, SquaresFourIcon, SunIcon, ToggleGroup, ToggleGroupItem } from '../components/ds';
 import type { IconProps } from '@luminpdf/icons/dist/lib/types';
 import { sx } from '../lib/sx';
 import { isOpen } from '../rules/pdd';
@@ -27,8 +27,6 @@ export function Shell() {
     ['figma', 'Figma files', PenNibIcon, String(state.fstore.files.length)],
     ['storybook', 'Storybook', BookOpenIcon, `${toRead.length} to read`],
   ];
-  const ints = [c.integrations.linear, c.integrations.figma];
-  const quickLinks = [{ label: 'Linear · My issues', href: c.links.myIssues }, { label: 'Linear · Current cycle', href: c.links.activeCycle }, { label: 'Figma · Recents', href: c.links.figmaRecents }];
   const openIntegrations = () => actions.setState({ dialog: 'integrations' });
   const cycleTheme = () => actions.setTheme(({ system: 'light', light: 'dark', dark: 'system' } as const)[state.themePref]);
 
@@ -52,26 +50,8 @@ export function Shell() {
               </button>
             ))}
           </nav>
-          <Button variant="outline" onClick={() => actions.openSave()}><PlusIcon size={16} />Save article</Button>
-          <div style={sx('display:flex; flex-direction:column; gap:6px;')}>
-            <span style={sx('padding:0 6px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);')}>Integrations</span>
-            {ints.map((s) => (
-              <button key={s.id} type="button" onClick={openIntegrations} className="hv-ring" style={sx('display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--sidebar-border); border-radius:8px; background:var(--background); color:var(--foreground); font:inherit; text-align:left; cursor:pointer;')}>
-                <span aria-hidden="true" style={sx('flex:none; width:8px; height:8px; border-radius:999px;', { background: DOT[s.mode] })} />
-                <span style={sx('flex:1; display:flex; flex-direction:column; min-width:0;')}>
-                  <strong style={sx('font-size:13px; font-weight:500;')}>{s.name}</strong>
-                  <span style={sx('font-size:12px; color:var(--muted-foreground);')}>{s.label}</span>
-                </span>
-                <PlugIcon size={14} />
-              </button>
-            ))}
-          </div>
-          <div style={sx('display:flex; flex-direction:column; gap:2px;')}>
-            <span style={sx('padding:0 6px 4px; font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-foreground);')}>Quick links</span>
-            {quickLinks.map((q) => (
-              <a key={q.label} href={q.href} target="_blank" rel="noreferrer" className="hv-sidebar-fg" style={sx('display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 8px; border-radius:6px; font-size:13px; color:var(--muted-foreground); text-decoration:none;')}>{q.label}<ArrowUpRightIcon size={14} /></a>
-            ))}
-          </div>
+          {/* Save article, Integrations and Quick links were removed from the desktop sidebar at the owner's request (28 Oct).
+              Save article stays in page headers; Integrations opens from the "How to connect" banners and the mobile top bar. */}
           <div style={sx('margin-top:auto; padding:0 4px;')}>
             <ToggleGroup type="single" variant="outline" size="sm" value={state.themePref} onValueChange={(v: string) => v && actions.setTheme(v as ThemePref)} aria-label="Theme">
               <ToggleGroupItem value="system" aria-label="System theme"><DesktopIcon size={14} /></ToggleGroupItem>

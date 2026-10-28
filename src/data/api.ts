@@ -3,6 +3,8 @@ import { FIGMA_RECENTS, LINEAR_WORKSPACE, SAMPLE_MODE } from '../config';
 import { sampleLinearWorkspace } from './sample';
 import type { LinearWorkspace } from './types';
 
+export interface FigmaFileStructure { key: string; name: string; lastModified: string; thumbnailUrl: string | null; version: string | null; pages: { id: string; name: string }[]; fetchedAt: string }
+
 export class UnauthorizedError extends Error {}
 /** A failed /api call. `message` is always human-readable text, never a serialized object. */
 export class ApiError extends Error {
@@ -54,4 +56,9 @@ export const session = {
   // Login calls request() directly so a 401 keeps its own "Incorrect password" message.
   login: (password: string) => request<{ authenticated: boolean }>('/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password }) }),
   logout: () => getJson<{ authenticated: boolean }>('/api/auth/logout', { method: 'POST' }),
+};
+
+export const figmaApi = {
+  status: () => getJson<{ configured: boolean }>('/api/figma/status'),
+  file: (key: string) => getJson<FigmaFileStructure>(`/api/figma/file?key=${encodeURIComponent(key)}`),
 };
